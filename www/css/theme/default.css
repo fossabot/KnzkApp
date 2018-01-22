@@ -24,6 +24,10 @@ body, html, .dark-bg, .page__background {
     color: #fff;
 }
 
+.list--inset {
+    border: 1px solid #393f4f;
+}
+
 .list-header {
     background: #282c37;
     color: #606984;

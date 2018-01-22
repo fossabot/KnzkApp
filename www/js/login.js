@@ -1,52 +1,54 @@
 function login_open(domain) {
-    var os_name;
-    if (ons.platform.isIOS()) {
-        os_name = "for iOS";
-    } else if (ons.platform.isAndroid()) {
-        os_name = "for Android";
-    } else {
-        os_name = "(Test)";
-    }
-    fetch("https://"+domain+"/api/v1/apps", {
-        method: 'POST',
-        headers: {'content-type': 'application/json'},
-        body: JSON.stringify({
-            scopes: 'read write follow',
-            client_name: 'KnzkApp '+os_name,
-            redirect_uris: 'knzkapp://login/token',
-            website: 'https://github.com/knzkdev/knzkapp'
-        })
-    }).then(function(response) {
-        if(response.ok) {
-            return response.json();
-        } else {
-            throw new Error();
+    ons.notification.confirm('OKを押してインスタンスの利用規約に同意したものとします。', {title: 'ログイン'}).then(function (e) {
+        if (e === 1) {
+            var os_name;
+            if (ons.platform.isIOS()) {
+                os_name = "for iOS";
+            } else if (ons.platform.isAndroid()) {
+                os_name = "for Android";
+            } else {
+                os_name = "(Test)";
+            }
+            fetch("https://"+domain+"/api/v1/apps", {
+                method: 'POST',
+                headers: {'content-type': 'application/json'},
+                body: JSON.stringify({
+                    scopes: 'read write follow',
+                    client_name: 'KnzkApp '+os_name,
+                    redirect_uris: 'knzkapp://login/token',
+                    website: 'https://github.com/knzkdev/knzkapp'
+                })
+            }).then(function(response) {
+                if(response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error();
+                }
+            }).then(function(json) {
+                inst_domain = domain;
+                inst_login_cid = json["client_id"];
+                inst_login_scr = json["client_secret"];
+                var url = 'https://'+domain+'/oauth/authorize?response_type=code&redirect_uri=knzkapp://login/token&scope=read+write+follow&client_id='+inst_login_cid;
+                if (ons.platform.isIOS()) {
+                    openURL(url);
+                } else {
+                    window.open(url, "_system");
+                }
+            }).catch(function(error) {
+                console.log(error);
+                show('cannot-connect-sv-login');
+                hide('now_loading');
+            });
         }
-    }).then(function(json) {
-        inst_domain = domain;
-        inst_login_cid = json["client_id"];
-        inst_login_scr = json["client_secret"];
-        var url = 'https://'+domain+'/oauth/authorize?response_type=code&redirect_uri=knzkapp://login/token&scope=read+write+follow&client_id='+inst_login_cid;
-        if (ons.platform.isIOS()) {
-            openURL(url);
-        } else {
-            window.open(url, "_system");
-        }
-    }).catch(function(error) {
-        console.log(error);
-        show('cannot-connect-sv-login');
-        hide('now_loading');
     });
 }
 
-function login_open_c(domain) {
-    if (domain) {
-        ons.notification.confirm('外部インスタンスログインは、一部機能が使用できません。(ノンサポートとなります）<br><br>OKを押して各インスタンスの利用規約に同意したものとします。', {title: '注意！'}).then(function (e) {
-            if (e === 1) {
-                login_open(domain);
-            }
-        });
-    }
+function login_open_c() {
+    ons.notification.prompt('外部インスタンスログインは、一部機能が使用できません。(ノンサポートとなります）<br>(空欄でキャンセル)', {title: 'ドメインを入力してください'}).then(function (domain) {
+        if (domain) {
+            login_open(domain);
+        }
+    });
 }
 
 function login_callback(code) {

@@ -15,6 +15,10 @@ body, html, .dark-bg, .page__background, .nav-search {
     background: #212121;
 }
 
+.list--inset {
+    border: 1px solid #353535;
+}
+
 .list-header {
     background: #212121;
     color: #636363;
