@@ -111,6 +111,11 @@ function t_text(text) {
             text = text.replace(new RegExp(emoji,"g"),replacetext);
             i++;
         }
+        text = text.replace(/:@([a-zA-Z0-9_].*):/g , "<img class=\"emojione\" src=\""+getUserEmoji($1)+"\" />");
+        var userEmoji;
+        if (userEmoji = text.match(/:@([a-zA-Z0-9_].*):/g)) {
+
+        }
     }
 
     //読み仮名 from theboss.tech
