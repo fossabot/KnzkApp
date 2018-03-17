@@ -547,6 +547,8 @@ function show_post(id, near) {
                     }
 
                     document.getElementById("show_toot").innerHTML = reshtml;
+
+                    //$("#showtoot-page > .page__content").scrollTop($("#show_toot > #post_"+id).offset().top - ons.platform.isAndroid() ? 40 : 44);
                 });
             }
         }
