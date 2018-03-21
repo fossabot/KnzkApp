@@ -17,6 +17,11 @@ window.fn.open = function() {
     menu.open();
 };
 
+window.fn.close = function() {
+    var menu = document.getElementById('splitter-menu');
+    menu.close();
+};
+
 function reset_nav() {
     var list = document.getElementById("music-form");
     var menu = document.getElementById("menu-list");

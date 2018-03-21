@@ -1,0 +1,59 @@
+.y-center {
+    text-align: center;
+}
+
+.w-max {
+    width: 100%;
+}
+
+.videolistbox {
+    width: 100%;
+    border-bottom: 1px solid #b2b2b2;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    background-color: #fafafa;
+    display: flex;
+}
+
+.videolistbox > .left {
+    width: 45%;
+}
+
+.videolistbox > .right {
+    padding: 4px;
+    width: 55%;
+}
+
+.videolistbox > .right {
+    margin-left: 5px;
+}
+
+.videolistbox .thumbnail {
+    width: 100%;
+}
+
+.videolistbox .videoname {
+    font-size: 1.2em;
+}
+
+.videolistbox .videodesc {
+    margin-top: 5px;
+}
+
+.username {
+    font-size: 13px;
+    color: #585858;
+}
+
+.cut {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+
+#DisplayBox > .toast {
+    background-color: #fafafa;
+    border-radius: 4px;
+    border: 1px solid #b2b2b2;
+}
