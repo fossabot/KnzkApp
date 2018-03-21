@@ -17,6 +17,7 @@
 
 .videolistbox > .left {
     width: 45%;
+    background-color: #000;
 }
 
 .videolistbox > .right {
@@ -32,7 +33,7 @@
     width: 100%;
 }
 
-.videolistbox .videoname {
+.videoname {
     font-size: 1.2em;
 }
 
@@ -56,4 +57,50 @@
     background-color: #fafafa;
     border-radius: 4px;
     border: 1px solid #b2b2b2;
+}
+
+video {
+    width: 100%;
+}
+
+.VideoonPage {
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.FlexBox {
+    display: flex;
+}
+
+.FlexBox > .left, .FlexBox > .right {
+    width: 50%;
+}
+
+.FlexBox > .right {
+    color: #000;
+}
+
+#videoname {
+    padding-top: 5px;
+    padding-left: 5px;
+    font-weight: bold;
+    white-space: normal;
+}
+
+#DisplayBox > .toast {
+    padding: 0;
+    line-height: initial;
+}
+
+#DisplayBox .toast__message {
+    margin-right: 5px;
+}
+
+.invisible {
+    display: none;
+}
+
+#videoPage {
+    margin-top: 57%;
 }
