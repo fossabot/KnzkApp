@@ -1,0 +1,364 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Content-Security-Policy" content="default-src * knzkapp: data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <script src="../components/loader.js"></script>
+    <link rel="stylesheet" href="../components/loader.css">
+
+    <script src="../components/onsenui/js/onsenui.min.js"></script>
+    <link rel="stylesheet" href="../components/onsenui/css/onsenui.min.css">
+    <link rel="stylesheet" href="../components/onsenui/css/onsen-css-components.min.css">
+    <!-- for Testing
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/onsen/2.8.3/js/onsenui.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/onsen/2.8.3/css/onsenui.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/onsen/2.8.3/css/onsen-css-components.css">
+    -->
+
+    <script src="../lib/raven.min.js" async></script>
+    <script src="../lib/jquery-3.2.1.slim.min.js" async></script>
+    <script src="../lib/twitter.relative.time.min.js" async></script>
+    <script src="../lib/fetch.js" async></script>
+
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <script>
+        var inst_p = "";
+        var endpoint = "";
+    </script>
+
+    <script src="../config/config.js"></script>
+    <script src="../js/log.js"></script>
+    <script src="../js/components.js"></script>
+    <script src="js/videos.js"></script>
+    <script src="js/video.js"></script>
+    <script src="js/init.js"></script>
+</head>
+<body>
+<ons-splitter>
+    <ons-splitter-side id="splitter-menu" side="left" width="280px" collapse animation="reveal">
+        <ons-page>
+            <ons-list>
+                <ons-list-item class="splitter-profile-item" id="splitter-profile-bg">
+                    <div class="splitter-profile">
+                        <p>
+                        <h4 id="splitter-profile-name" class="acct-small" style="height: 20px">PeerTube</h4>
+                        </p>
+                    </div>
+                </ons-list-item>
+                <ons-list-item modifier="chevron" tappable onclick="window.location.href='../index.html'">
+                    Mastodonに移動
+                </ons-list-item>
+                <ons-list-item modifier="chevron" tappable onclick="localStorage.removeItem('knzkapp_peertube_domain');init()">
+                    別のPeerTubeにアクセス
+                </ons-list-item>
+            </ons-list>
+
+            <div id="menu-list-base">
+                <div id="account-list" style="display: none;">
+                    <ons-list>
+                        <ons-list-item modifier="chevron" tappable onclick="open_addaccount()">
+                            <label class="left music-item">
+                                <i class="list-item__icon list-item--chevron__icon ons-icon fa-plus fa fa-fw"></i>
+                            </label>
+                            <div class="center music-item">
+                                アカウント追加
+                            </div>
+                        </ons-list-item>
+                        <div id="account-list-other"></div>
+                    </ons-list>
+                </div>
+
+                <div id="menu-list">
+                    <ons-list>
+                        <ons-search-input placeholder="検索" onkeydown="SearchKey();" input-id="nav-search" class="w-max nav-search"></ons-search-input>
+                        <ons-list-header>ナビゲーション</ons-list-header>
+                        <ons-list-item modifier="chevron" tappable onclick="load('home.html');showVideos('-views', {title: 'トレンド'})">
+                            <div class="left">
+                                <i class="list-item__icon list-item--chevron__icon ons-icon fa-line-chart fa fa-fw"></i>
+                            </div>
+                            <div class="center">
+                                トレンド
+                            </div>
+                        </ons-list-item>
+                        <ons-list-item modifier="chevron" tappable onclick="load('home.html');showVideos('-createdAt', {local: 1, title: '新着'})">
+                            <div class="left">
+                                <i class="list-item__icon list-item--chevron__icon ons-icon fa-plus-circle fa fa-fw"></i>
+                            </div>
+                            <div class="center">
+                                新着
+                            </div>
+                        </ons-list-item>
+                        <ons-list-item modifier="chevron" tappable onclick="load('home.html');showVideos('-createdAt', {local: 1, title: 'ローカル'})">
+                            <div class="left">
+                                <i class="list-item__icon list-item--chevron__icon ons-icon fa-home fa fa-fw"></i>
+                            </div>
+                            <div class="center">
+                                ローカル
+                            </div>
+                        </ons-list-item>
+                        <ons-list-item modifier="chevron" tappable onclick="load('config.html')">
+                            <div class="left">
+                                <i class="list-item__icon list-item--chevron__icon ons-icon fa-cog fa fa-fw"></i>
+                            </div>
+                            <div class="center">
+                                設定
+                            </div>
+                        </ons-list-item>
+                    </ons-list>
+                </div>
+            </div>
+        </ons-page>
+    </ons-splitter-side>
+    <ons-splitter-content id="splitter-content" page="init.html"></ons-splitter-content>
+</ons-splitter>
+
+<template id="init.html">
+    <ons-page>
+        <ons-navigator id="navigator" page="home.html" swipeable></ons-navigator>
+    </ons-page>
+</template>
+
+<ons-template id="home.html">
+    <ons-page id="home">
+        <ons-toolbar>
+            <div class="left">
+                <ons-toolbar-button onclick="fn.open()">
+                    <ons-icon icon="fa-bars"></ons-icon>
+                </ons-toolbar-button>
+            </div>
+            <div class="center" onclick="scrollTL()" id="home_title">トレンド</div>
+            <div class="right">
+                <ons-toolbar-button onclick="showVideos()">
+                    <ons-icon icon="fa-refresh"></ons-icon>
+                </ons-toolbar-button>
+            </div>
+        </ons-toolbar>
+        <div id="home_main"></div>
+    </ons-page>
+</ons-template>
+
+<ons-template id="config.html">
+    <ons-page id="config-page">
+        <ons-toolbar>
+            <div class="left">
+                <ons-toolbar-button onclick="fn.open()">
+                    <ons-icon icon="fa-bars"></ons-icon>
+                </ons-toolbar-button>
+            </div>
+            <div class="center">設定</div>
+        </ons-toolbar>
+        <ons-list>
+            <ons-list-item modifier="chevron" onclick="openURL('https://' + inst_p + '/about')">
+                <div class="left">
+                    <i class="list-item__icon list-item--chevron__icon ons-icon fa-book fa fa-fw"></i>
+                </div>
+                <div class="center">
+                    サーバー情報
+                </div>
+            </ons-list-item>
+            <ons-list-item modifier="chevron" tappable onclick="loadNav('about.html', null, true, true)">
+                <div class="left">
+                    <i class="list-item__icon list-item--chevron__icon ons-icon fa-book fa fa-fw"></i>
+                </div>
+                <div class="center">
+                    このアプリについて
+                </div>
+            </ons-list-item>
+        </ons-list>
+        <div class="container">
+            <p class="note">設定無いよ(´・ω・｀)</p>
+        </div>
+    </ons-page>
+</ons-template>
+
+<ons-template id="olist.html">
+    <ons-page>
+        <ons-toolbar>
+            <div class="left">
+                <ons-toolbar-button onclick="fn.open()">
+                    <ons-icon icon="fa-bars"></ons-icon>
+                </ons-toolbar-button>
+            </div>
+            <div class="center" id="olist_title">読み込み中...</div>
+        </ons-toolbar>
+
+        <div id="olist_main">
+            <div class="loading-now">
+                <ons-progress-circular indeterminate></ons-progress-circular>
+            </div>
+        </div>
+    </ons-page>
+</ons-template>
+
+<ons-template id="olist_nav.html">
+    <ons-page>
+        <ons-toolbar>
+            <div class="left">
+                <ons-toolbar-button onclick="BackTab()">
+                    <ons-icon icon="fa-chevron-left"></ons-icon>
+                    戻る
+                </ons-toolbar-button>
+            </div>
+            <div class="center" id="olist_nav_title">読み込み中...</div>
+        </ons-toolbar>
+
+        <div id="olist_nav_main">
+            <div class="loading-now">
+                <ons-progress-circular indeterminate></ons-progress-circular>
+            </div>
+        </div>
+    </ons-page>
+</ons-template>
+
+<ons-template id="about.html">
+    <ons-page id="about-page">
+        <ons-toolbar>
+            <div class="left">
+                <ons-toolbar-button onclick="BackTab()">
+                    <ons-icon icon="fa-chevron-left"></ons-icon>
+                    戻る
+                </ons-toolbar-button>
+            </div>
+            <div class="center">このアプリについて</div>
+        </ons-toolbar>
+        <p></p>
+        <div class="container">
+            <div class="w-max main-logo y-center">
+                <img src="../img/logo.svg" style="width: 80%;"/>
+            </div>
+            <p>
+                <b id="app-version">KnzkApp (PeerTube)</b>
+            </p>
+            <span class="fa fa-spin"><b>南無！ｗ</b></span>
+            <p></p>
+            <p>
+                KnzkAppはオープンソースソフトウェアです。<br><a href="https://github.com/KnzkDev/KnzkApp" target="_blank"><i class="fa fa-github"></i> KnzkDev/KnzkApp</a> から開発に参加したり、問題を報告する事ができます。
+            </p>
+        </div>
+        <ons-list>
+            <ons-list-item onclick="openURL('https://github.com/KnzkDev/KnzkApp/wiki/License')">OSSライセンス</ons-list-item>
+            <ons-list-item onclick="openURL('https://knzkapp.yuzu.tk/privacy.html')">KnzkApp プライバシーポリシー</ons-list-item>
+            <ons-list-header>クレジット</ons-list-header>
+            <ons-list-item onclick="openURL('https://knzk.me/@y')">アプリ開発: ねじりわさび</ons-list-item>
+            <ons-list-item onclick="openURL('https://knzk.me/@annotunzdy')">アプリ開発 / iOS版配布: あんのたん</ons-list-item>
+        </ons-list>
+    </ons-page>
+</ons-template>
+
+<ons-template id="video.html">
+    <ons-page>
+    </ons-page>
+</ons-template>
+
+<ons-toast id="DisplayBox">
+    <iframe src="" id="boxembed"></iframe>
+</ons-toast>
+
+<div id="alert_list">
+    <ons-modal direction="up" id="now_loading">
+        <div style="text-align: center">
+            <p>
+                <ons-progress-circular indeterminate></ons-progress-circular>
+            </p>
+        </div>
+    </ons-modal>
+
+    <ons-alert-dialog id="error-domain">
+        <div class="alert-dialog-title">エラー</div>
+        <div class="alert-dialog-content">
+            サーバーにアクセスできませんでした。<br>
+            やり直してください。
+        </div>
+        <div class="alert-dialog-footer">
+            <button class="alert-dialog-button" onclick="hide('error-domain')">閉じる</button>
+            <button class="alert-dialog-button" onclick="init()">再試行</button>
+        </div>
+    </ons-alert-dialog>
+
+    <ons-toast id="loggedin_dialog">
+        ログインしました！<button onclick="hide('loggedin_dialog')">閉じる</button>
+    </ons-toast>
+    <ons-alert-dialog id="logout_dialog">
+        <div class="alert-dialog-title">ログアウト</div>
+        <div class="alert-dialog-content">
+            ログアウトしてもよろしいですか？
+        </div>
+        <div class="alert-dialog-footer">
+            <button class="alert-dialog-button" onclick="hide('logout_dialog')">戻る</button>
+            <button class="alert-dialog-button" onclick="logout()">ログアウト</button>
+        </div>
+    </ons-alert-dialog>
+    <ons-toast id="loggedout_dialog">
+        ログアウトしました<button onclick="hide('loggedout_dialog')">閉じる</button>
+    </ons-toast>
+
+    <ons-toast id="report-post">
+        レポートのご協力ありがとうございます。
+    </ons-toast>
+    <ons-toast id="ok-clear-alert">
+        通知を消去しました。
+    </ons-toast>
+    <ons-toast id="ok_conf">
+        設定を保存しました。
+    </ons-toast>
+    <ons-toast id="ok_conf_2">
+        設定しました。
+    </ons-toast>
+
+    <ons-toast id="del_ok">
+        削除しました。
+    </ons-toast>
+    <!-- エラー -->
+    <ons-toast id="cannot-pros">
+        エラー: 実行できませんでした。<br>
+        接続環境が悪いか鯖落ちしている可能性があります。
+    </ons-toast>
+    <ons-toast id="cannot-post">
+        エラー: 投稿できませんでした。<br>
+        接続環境が悪いか鯖落ちしている可能性があります。
+    </ons-toast>
+    <ons-toast id="cannot-load">
+        エラー: 取得できませんでした。<br>
+        接続環境が悪いか鯖落ちしている可能性があります。
+    </ons-toast>
+
+    <ons-alert-dialog id="cannot-use-ls">
+        <div class="alert-dialog-title">エラー</div>
+        <div class="alert-dialog-content">
+            OSのバージョンが古い可能性があります。<br>
+            詳細は開発者にお問い合わせください。
+        </div>
+    </ons-alert-dialog>
+
+    <ons-toast id="cannot-connect-sv">
+        エラー: エラーが発生しました。<br>
+        再起動するなどでもう一度お試しください。
+    </ons-toast>
+
+    <ons-toast id="cannot-connect-API">
+        エラー: APIを認証できませんでした。<br>
+        アカ一覧から一度削除して、もう一度ログインしてください。
+    </ons-toast>
+
+    <ons-toast id="no-acct">
+        エラー: アカウントが正常に取得できませんでした。<br>
+        このインスタンスに登録されていない可能性があります。
+    </ons-toast>
+
+    <ons-toast id="no-disp_before">
+        エラー: 取得できませんでした。
+    </ons-toast>
+
+    <ons-alert-dialog id="DB_migration">
+        <div class="alert-dialog-title">起動しています...</div>
+        <div class="alert-dialog-content">
+            データベースのマイグレーション中です。<br>
+            しばらくお待ち下さい...
+        </div>
+    </ons-alert-dialog>
+</div>
+</body>
+</html>
