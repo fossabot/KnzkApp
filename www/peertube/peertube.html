@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <meta http-equiv="Content-Security-Policy" content="default-src * knzkapp: data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <meta http-equiv="Content-Security-Policy" content="default-src * knzkapp: blob: data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
     <script src="../components/loader.js"></script>
     <link rel="stylesheet" href="../components/loader.css">
 
@@ -20,6 +20,7 @@
     <script src="../lib/jquery-3.2.1.slim.min.js" async></script>
     <script src="../lib/twitter.relative.time.min.js" async></script>
     <script src="../lib/fetch.js" async></script>
+    <script src="https://cdn.jsdelivr.net/webtorrent/latest/webtorrent.min.js" async></script>
 
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
@@ -27,6 +28,8 @@
     <script>
         var inst_p = "";
         var endpoint = "";
+        var nowPlaying = "";
+        var VideoData = {};
     </script>
 
     <script src="../config/config.js"></script>
@@ -250,11 +253,21 @@
 
 <ons-template id="video.html">
     <ons-page>
+        <div id="videoPage">
+            <ons-button onclick="backVideo()">戻る</ons-button>
+        </div>
     </ons-page>
 </ons-template>
 
 <ons-toast id="DisplayBox">
-    <iframe src="" id="boxembed"></iframe>
+    <div class="FlexBox">
+        <div class="left">
+            <span id="videomainbox"></span>
+        </div>
+        <div class="right" id="BoxDesc">
+            <div id="videoname"></div>
+        </div>
+    </div>
 </ons-toast>
 
 <div id="alert_list">

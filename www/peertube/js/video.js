@@ -17,5 +17,56 @@ function videoListBox(data) {
 }
 
 function showVideo(id) {
-    show('DisplayBox');
+    if (nowPlaying === id) {
+        openVideo(id);
+    } else {
+        if (nowPlaying) {
+            $("#videomainbox").empty();
+            document.getElementById("videoname").innerText = "";
+        }
+        show('DisplayBox');
+        fetch(endpoint+"/videos/"+id, {
+            headers: {'content-type': 'application/json'},
+            method: 'GET'
+        }).then(function(response) {
+            if(response.ok) {
+                return response.json();
+            } else {
+                sendLog("PT_Error/Video", response.json);
+                showtoast('cannot-load');
+                return false;
+            }
+        }).then(function(json) {
+            if (json["id"]) {
+                VideoData[id] = json;
+                var client = new WebTorrent();
+                client.add(json['files']['0']['torrentUrl'], function (torrent) {
+                    var file = torrent.files.find(function (file) {
+                        return file.name;
+                    });
+                    file.appendTo('#videomainbox');
+                    document.getElementById("videoname").innerText = json["name"];
+                    nowPlaying = id;
+                    openVideo();
+                })
+            }
+        });
+    }
+}
+
+function openVideo() {
+    loadNav('video.html', "up");
+    $("#videomainbox > video").addClass("VideoonPage");
+    $("#BoxDesc").addClass("invisible");
+    $("#DisplayBox > div").removeClass("toast");
+    setTimeout(function () {
+
+    }, 500);
+}
+
+function backVideo() {
+    $("#videomainbox > video").removeClass("VideoonPage");
+    $("#BoxDesc").removeClass("invisible");
+    $("#DisplayBox > div").addClass("toast");
+    BackTab('down');
 }
