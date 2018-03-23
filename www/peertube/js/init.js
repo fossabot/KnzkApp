@@ -5,8 +5,9 @@ function init() {
         if (localStorage.getItem('knzkapp_peertube_domain')) {
             inst_p = localStorage.getItem('knzkapp_peertube_domain');
             endpoint = "https://"+inst_p+"/api/v1";
-            document.getElementById("splitter-profile-name").innerText = inst_p;
+            elemid("splitter-profile-name").innerText = inst_p;
             setTimeout(showVideos('-views', {title: 'トレンド'}), 500);
+            initevent();
         } else {
             ons.notification.prompt('PeerTubeサーバーのドメインを入力してください。', {title: 'PeerTubeにアクセス'}).then(function (repcom) {
                 if (repcom) {
@@ -36,6 +37,14 @@ function init() {
     }
 }
 
+function initevent() {
+}
+
 ons.ready(function() {
+    if (ons.platform.isIPhoneX()) { // for iPhone X
+        var html_tag = document.documentElement;
+        html_tag.setAttribute('onsflag-iphonex-portrait', '1');
+        html_tag.setAttribute('onsflag-iphonex-landscape', '1');
+    }
     init();
 });
