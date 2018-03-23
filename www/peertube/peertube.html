@@ -31,6 +31,7 @@
         var nowPlaying = "";
         var VideoData = {};
         var lastconf = {};
+        var is_openController = [];
     </script>
 
     <script src="../config/config.js"></script>
@@ -256,7 +257,7 @@
 <ons-template id="video.html">
     <ons-page>
         <div id="videoPage" class="white">
-            <div class="VideoBackController"></div>
+            <div class="VideoBackController" onclick="openController()"></div>
             <div class="container">
                 <h4 id="videoPage_name"></h4>
                 <ons-icon icon="fa-clock-o"></ons-icon> <span id="videoPage_time"></span>に投稿 - <ons-icon icon="fa-play"></ons-icon> <span id="videoPage_views"></span>回<br>
@@ -264,14 +265,35 @@
                     <b id="videoPage_channel"></b><br>
                     by <span id="videoPage_user"></span> <img id="videoPage_icon" class="icon"/>
                 </p>
-                <ons-button onclick="backVideo()">戻る</ons-button>
             </div>
         </div>
     </ons-page>
 </ons-template>
 
-<ons-toast id="VideoController">
-    いぇーーーーいねじわさだよおおおおおおおおおおおおおおお(瀕死)
+<ons-toast id="VideoController" onclick="openController()">
+    <div class="FlexBox">
+        <div class="left">
+            <ons-button modifier="quiet" onclick="backVideo()" style="padding: 4px 0"><i class="fa fa-angle-down fa-fw white_c"></i></ons-button>
+        </div>
+        <div class="right" style="text-align: right">
+            <ons-button modifier="quiet" onclick="OpenMenu()" style="padding: 4px 0"><i class="fa fa-bars fa-fw white_c"></i></ons-button>
+        </div>
+    </div>
+    <div class="VideoController_bottom">
+        <div class="y-center">
+            <ons-button modifier="quiet" onclick="changeTime(-15)"><ruby><rb><i class="fa fa-backward fa-fw white_c"></i></rb><rt class="white_c">15s</rt></ruby></ons-button>
+            <ons-button modifier="quiet" onclick="changePlaying()"><i class="fa fa-pause fa-fw fa-2x white_c" id="VideoControllerBox_Play"></i></ons-button>
+            <ons-button modifier="quiet" onclick="changeTime(15)"><ruby><rb><i class="fa fa-forward fa-fw white_c"></i></rb><rt class="white_c">15s</rt></ruby></ons-button>
+        </div>
+        <ons-row>
+            <ons-col>
+                <ons-range style="width: 100%;" value="25" modifier="material" id="VideoRange" onchange="changeTimeAbsolute(this.value)"></ons-range>
+            </ons-col>
+            <ons-col width="40px" style="text-align: center; line-height: 31px;">
+                <span id="videoTime"></span>
+            </ons-col>
+        </ons-row>
+    </div>
 </ons-toast>
 
 <ons-toast id="DisplayBox">
@@ -283,8 +305,10 @@
         </div>
         <div class="right" id="BoxDesc">
             <div id="videoname"></div>
-            <div class="y-center" style="padding-top: 10px;">
-                <ons-button modifier="quiet" onclick="changePlaying($('#VideoBox_Play'))" class="y-center"><i class="fa fa-pause fa-fw fa-2x black" id="VideoBox_Play"></i></ons-button>
+            <div class="y-center" style="padding-top: 10px">
+                <ons-button modifier="quiet" onclick="changeTime(-15)"><ruby><rb><i class="fa fa-backward fa-fw black"></i></rb><rt class="black">15s</rt></ruby></ons-button>
+                <ons-button modifier="quiet" onclick="changePlaying()"><i class="fa fa-pause fa-fw fa-2x black" id="VideoBox_Play"></i></ons-button>
+                <ons-button modifier="quiet" onclick="changeTime(15)"><ruby><rb><i class="fa fa-forward fa-fw black"></i></rb><rt class="black">15s</rt></ruby></ons-button>
             </div>
         </div>
     </div>

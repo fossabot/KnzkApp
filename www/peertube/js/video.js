@@ -55,14 +55,34 @@ function showVideo(id) {
                     });
                     file.appendTo('#videomainbox');
                     elemid("videoname").innerText = json["name"];
-                    document.querySelector("#videomainbox > video").controls = false;
+                    var video = document.querySelector("#videomainbox > video");
+                    video.controls = false;
                     elemid("VideoBox_Play").className = "fa fa-fw fa-2x black fa-pause";
                     nowPlaying = id;
                     openVideo();
+                    video.addEventListener("timeupdate", function() {
+                        elemid("VideoRange").value = this.currentTime / this.duration * 100;
+                        elemid("videoTime").innerText = generateTime(this.currentTime);
+                    }, false);
+                    video.addEventListener("ended", function() {
+                        changePlaying(0);
+                        openController();
+                    }, false);
+                    setTimeout(function () {
+                        openController();
+                    }, 500);
                 })
             }
         });
     }
+}
+
+function generateTime(time) {
+    var text = "", m = parseInt(time / 60), s = parseInt(time % 60);
+    text += m < 10 ? "0" + m : m;
+    text += ":";
+    text += s < 10 ? "0" + s : s;
+    return text;
 }
 
 function openVideo() {
@@ -74,7 +94,6 @@ function openVideo() {
     $("#DisplayBox > div").removeClass("toast");
     $("#DisplayBox .toast__message").removeClass("toast__message");
     $("#FlexBox").removeClass("FlexBox");
-    $("#VideoController").removeClass("invisible");
     setTimeout(function () {
         elemid("videoPage_name").innerText = VideoData[nowPlaying]["name"];
         elemid("videoPage_time").innerText = displayTime('new', VideoData[nowPlaying]['createdAt']);
@@ -93,19 +112,69 @@ function backVideo() {
     $("#DisplayBox > div").addClass("toast");
     $("#DisplayBox .toast__message").addClass("toast__message");
     $("#FlexBox").addClass("FlexBox");
-    $("#VideoController").addClass("invisible");
+    setTimeout(function () {
+        $("#VideoController").addClass("invisible");
+    }, 50);
     BackTab('down');
 }
 
-function changePlaying(iconobj) {
+function changePlaying(force) { //force: 1で強制的に再生
     var video = document.querySelector("#videomainbox > video");
-    iconobj.removeClass("fa-play fa-pause");
-    if (video.paused) { //停止中
+    var iconobj = [$('#VideoBox_Play'), $('#VideoControllerBox_Play')];
+    iconobj[0].removeClass("fa-play fa-pause");
+    iconobj[1].removeClass("fa-play fa-pause");
+    if ((video.paused && force === undefined) || force === 1) { //停止中
         video.play();
-        iconobj.addClass("fa-pause");
+        iconobj[0].addClass("fa-pause");
+        iconobj[1].addClass("fa-pause");
     } else { //再生中
         video.pause();
-        iconobj.addClass("fa-play");
+        iconobj[0].addClass("fa-play");
+        iconobj[1].addClass("fa-play");
     }
     return video.paused;
+}
+
+function changeTime(time) {
+    var video = document.querySelector("#videomainbox > video");
+    video.currentTime = video.currentTime + time;
+}
+
+function changeTimeAbsolute(time) {
+    openController();
+    var video = document.querySelector("#videomainbox > video");
+    video.currentTime = time * video.duration / 100;
+}
+
+function openController() {
+    var i = 0;
+    if (is_openController.length !== 0) i = is_openController.length;
+    is_openController[i] = true;
+    $("#VideoController").removeClass("invisible");
+    setTimeout(function () {
+        if (!is_openController[i+1]) {
+            $("#VideoController").addClass("invisible");
+            is_openController = [];
+        }
+    }, 5000);
+}
+
+function OpenMenu() {
+    ons.openActionSheet({
+        cancelable: true,
+        buttons: [
+            '速度',
+            '画質',
+            {
+                label: '通報',
+                modifier: 'destructive'
+            },
+            {
+                label: 'キャンセル',
+                icon: 'md-close'
+            }
+        ]
+    }).then(function (index) {
+
+    });
 }

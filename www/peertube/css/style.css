@@ -146,7 +146,22 @@
 }
 
 #VideoController .toast__message {
+    position: relative;
     margin: 10px 0 0;
     white-space: normal;
     line-height: 1;
+}
+
+.VideoController_bottom {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.VideoController_top_right {
+    float: right;
+}
+
+#VideoRange .range--material__input {
+    background-image: linear-gradient(#0076ff,#0076ff);
 }
