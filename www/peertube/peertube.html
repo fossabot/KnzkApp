@@ -30,11 +30,13 @@
         var endpoint = "";
         var nowPlaying = "";
         var VideoData = {};
+        var lastconf = {};
     </script>
 
     <script src="../config/config.js"></script>
     <script src="../js/log.js"></script>
     <script src="../js/components.js"></script>
+    <script src="js/components.js"></script>
     <script src="js/videos.js"></script>
     <script src="js/video.js"></script>
     <script src="js/init.js"></script>
@@ -253,19 +255,37 @@
 
 <ons-template id="video.html">
     <ons-page>
-        <div id="videoPage">
-            <ons-button onclick="backVideo()">戻る</ons-button>
+        <div id="videoPage" class="white">
+            <div class="VideoBackController"></div>
+            <div class="container">
+                <h4 id="videoPage_name"></h4>
+                <ons-icon icon="fa-clock-o"></ons-icon> <span id="videoPage_time"></span>に投稿 - <ons-icon icon="fa-play"></ons-icon> <span id="videoPage_views"></span>回<br>
+                <p>
+                    <b id="videoPage_channel"></b><br>
+                    by <span id="videoPage_user"></span> <img id="videoPage_icon" class="icon"/>
+                </p>
+                <ons-button onclick="backVideo()">戻る</ons-button>
+            </div>
         </div>
     </ons-page>
 </ons-template>
 
+<ons-toast id="VideoController">
+    いぇーーーーいねじわさだよおおおおおおおおおおおおおおお(瀕死)
+</ons-toast>
+
 <ons-toast id="DisplayBox">
-    <div class="FlexBox">
-        <div class="left">
-            <span id="videomainbox"></span>
+    <div class="FlexBox" id="FlexBox">
+        <div class="left" onclick="openVideo()">
+            <div class="VideoBox">
+                <div id="videomainbox"></div>
+            </div>
         </div>
         <div class="right" id="BoxDesc">
             <div id="videoname"></div>
+            <div class="y-center" style="padding-top: 10px;">
+                <ons-button modifier="quiet" onclick="changePlaying($('#VideoBox_Play'))" class="y-center"><i class="fa fa-pause fa-fw fa-2x black" id="VideoBox_Play"></i></ons-button>
+            </div>
         </div>
     </div>
 </ons-toast>

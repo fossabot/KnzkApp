@@ -1,8 +1,16 @@
+.white {
+    background-color: #fafafa;
+}
+
+.white_c {
+    color: #fafafa;
+}
+
 .y-center {
     text-align: center;
 }
 
-.w-max {
+.w-max, video {
     width: 100%;
 }
 
@@ -11,7 +19,6 @@
     border-bottom: 1px solid #b2b2b2;
     overflow-x: hidden;
     overflow-y: hidden;
-    background-color: #fafafa;
     display: flex;
 }
 
@@ -59,10 +66,6 @@
     border: 1px solid #b2b2b2;
 }
 
-video {
-    width: 100%;
-}
-
 .VideoonPage {
     position: fixed;
     top: 0;
@@ -77,7 +80,7 @@ video {
     width: 50%;
 }
 
-.FlexBox > .right {
+.FlexBox > .right, .black {
     color: #000;
 }
 
@@ -102,5 +105,48 @@ video {
 }
 
 #videoPage {
-    margin-top: 57%;
+    height: 100%;
+}
+
+.VideoBox {
+    position: relative;
+}
+
+.VideoBackController {
+    width: 100%;
+    position: absolute;
+    top: 0;
+}
+
+#videomainbox, video {
+    line-height: initial;
+}
+
+#videoPage {
+    padding-top: 60%;
+}
+
+.icon {
+    object-fit: cover;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+}
+
+#VideoController {
+    z-index: 20000 !important;
+}
+
+#VideoController > .toast {
+    background-color: rgba(0,0,0,.4);
+    border-radius: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+}
+
+#VideoController .toast__message {
+    margin: 10px 0 0;
+    white-space: normal;
+    line-height: 1;
 }

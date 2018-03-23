@@ -1,4 +1,10 @@
 function showVideos(mode, option = {}) {
+    if (mode) lastconf = {"mode": mode, "option": option};
+    else {
+        mode = lastconf["mode"];
+        option = lastconf["option"];
+    }
+
     fn.close();
     var reshtml = "", i = 0, get = "";
     if (option["local"]) get += "&filter=local";
@@ -20,8 +26,8 @@ function showVideos(mode, option = {}) {
                 i++;
             }
             displayTime('update');
-            document.getElementById("home_title").innerText = option["title"];
-            document.getElementById("home_main").innerHTML = reshtml;
+            elemid("home_title").innerText = option["title"];
+            elemid("home_main").innerHTML = reshtml;
         }
     });
 }
