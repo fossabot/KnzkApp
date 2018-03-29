@@ -42,7 +42,7 @@ function showVideo(id) {
                 return response.json();
             } else {
                 sendLog("PT_Error/Video", response.json);
-                showtoast('cannot-load');
+                showError("ネットワークエラー");
                 return false;
             }
         }).then(function(json) {
@@ -68,6 +68,12 @@ function showVideo(id) {
                         changePlaying(0);
                         openController();
                     }, false);
+                    video.addEventListener("loadedmetadata", function() {
+                        setVideoheight();
+                    }, false);
+                    video.addEventListener("error", function() {
+                        showError("動画の読み込み中に不明なエラーが発生しました。Code:"+this.error.code);
+                    }, false);
                     setTimeout(function () {
                         openController();
                     }, 500);
@@ -88,25 +94,35 @@ function generateTime(time) {
 function openVideo() {
     fn.close();
     loadNav('video.html', "up");
-    var video = $("#videomainbox > video");
     $(".VideoBox").addClass("VideoonPage");
     $("#BoxDesc").addClass("invisible");
     $("#DisplayBox > div").removeClass("toast");
     $("#DisplayBox .toast__message").removeClass("toast__message");
     $("#FlexBox").removeClass("FlexBox");
     setTimeout(function () {
+        setVideoheight();
+        renderComment(nowPlaying);
         elemid("videoPage_name").innerText = VideoData[nowPlaying]["name"];
         elemid("videoPage_time").innerText = displayTime('new', VideoData[nowPlaying]['createdAt']);
         elemid("videoPage_views").innerText = VideoData[nowPlaying]["views"];
         elemid("videoPage_channel").innerText = VideoData[nowPlaying]["channel"]["displayName"];
         elemid("videoPage_user").innerText = returnName(VideoData[nowPlaying]);
         elemid("videoPage_icon").src = "https://"+inst_p+VideoData[nowPlaying]['account']['avatar']['path'];
-        $(".VideoBackController").css({"height": (video.innerHeight()) + "px"});
-        $("#VideoController > .toast").css({"height": (video.innerHeight()) + "px"});
+        elemid("videoPage_category").innerText = VideoData[nowPlaying]['category']['label'];
+        elemid("videoPage_licence").innerText = VideoData[nowPlaying]['licence']['label'];
+        elemid("videoPage_language").innerText = VideoData[nowPlaying]['language']['label'];
     }, 500);
 }
 
+function setVideoheight() {
+    var video = $("#videomainbox > video");
+    $(".VideoBackController").css({"height": (video.innerHeight()) + "px"});
+    $("#VideoController > .toast").css({"height": (video.innerHeight()) + "px"});
+    $("#videoPage").css({"padding-top": (video.innerHeight()) + "px"});
+}
+
 function backVideo() {
+    $("body").removeClass("ons-ios-scroll ons-ios-scroll-fix");
     $(".VideoBox").removeClass("VideoonPage");
     $("#BoxDesc").removeClass("invisible");
     $("#DisplayBox > div").addClass("toast");
@@ -147,16 +163,18 @@ function changeTimeAbsolute(time) {
 }
 
 function openController() {
-    var i = 0;
-    if (is_openController.length !== 0) i = is_openController.length;
-    is_openController[i] = true;
-    $("#VideoController").removeClass("invisible");
-    setTimeout(function () {
-        if (!is_openController[i+1]) {
-            $("#VideoController").addClass("invisible");
-            is_openController = [];
-        }
-    }, 5000);
+    if (elemid("BoxDesc").className.indexOf("invisible") !== -1) {
+        var i = 0;
+        if (is_openController.length !== 0) i = is_openController.length;
+        is_openController[i] = true;
+        $("#VideoController").removeClass("invisible");
+        setTimeout(function () {
+            if (!is_openController[i+1]) {
+                $("#VideoController").addClass("invisible");
+                is_openController = [];
+            }
+        }, 5000);
+    }
 }
 
 function OpenMenu() {
@@ -175,6 +193,36 @@ function OpenMenu() {
             }
         ]
     }).then(function (index) {
-
+        if (index === 0) changeRate();
     });
+}
+
+function changeRate() {
+    var video = document.querySelector("#videomainbox > video");
+    ons.openActionSheet({
+        cancelable: true,
+        buttons: [
+            '2x',
+            '1.5x',
+            '1x',
+            '0.5x',
+            {
+                label: 'キャンセル',
+                icon: 'md-close'
+            }
+        ]
+    }).then(function (index) {
+        if (index === 0) video.playbackRate = 2;
+        else if (index === 1) video.playbackRate = 1.5;
+        else if (index === 2) video.playbackRate = 1.0;
+        else if (index === 3) video.playbackRate = 0.5;
+    });
+}
+
+function showError(text) {
+    elemid("error_box").innerText = text;
+    elemid("ErrorToast").show({animation: 'fall'});
+    setTimeout(function () {
+        elemid("ErrorToast").hide();
+    }, 5000);
 }

@@ -105,7 +105,7 @@
 }
 
 #videoPage {
-    height: 100%;
+    min-height: 100%;
 }
 
 .VideoBox {
@@ -114,7 +114,7 @@
 
 .VideoBackController {
     width: 100%;
-    position: absolute;
+    position: fixed;
     top: 0;
 }
 
@@ -164,4 +164,49 @@
 
 #VideoRange .range--material__input {
     background-image: linear-gradient(#0076ff,#0076ff);
+}
+
+@media screen and (orientation: landscape) {
+    #BoxDesc {
+        width: 100%;
+    }
+}
+
+#ErrorToast .toast__message {
+    margin: 10px 0 0;
+    white-space: normal;
+    line-height: 1;
+    color: #fff;
+}
+
+#ErrorToast > .toast {
+    background-color: #e51d79;
+    border-radius: 4px;
+}
+
+.main-logo {
+    background-color: #282c37;
+    border-radius: 10px;
+    padding: 5px 0;
+}
+
+.comment {
+    display: flex;
+    margin-top: 5px;
+}
+
+.comment > .icon > img {
+    object-fit: cover;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+}
+
+.comment > .main {
+    margin-left: 20px;
+}
+
+.loading-now {
+    text-align: center;
+    font-size: xx-large;
 }

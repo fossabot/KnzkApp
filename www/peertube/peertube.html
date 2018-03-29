@@ -31,6 +31,7 @@
         var nowPlaying = "";
         var VideoData = {};
         var lastconf = {};
+        var lastconf_olist = {};
         var is_openController = [];
     </script>
 
@@ -40,6 +41,7 @@
     <script src="js/components.js"></script>
     <script src="js/videos.js"></script>
     <script src="js/video.js"></script>
+    <script src="js/comment.js"></script>
     <script src="js/init.js"></script>
 </head>
 <body>
@@ -89,7 +91,7 @@
                                 トレンド
                             </div>
                         </ons-list-item>
-                        <ons-list-item modifier="chevron" tappable onclick="load('home.html');showVideos('-createdAt', {local: 1, title: '新着'})">
+                        <ons-list-item modifier="chevron" tappable onclick="load('home.html');showVideos('-createdAt', {title: '新着'})">
                             <div class="left">
                                 <i class="list-item__icon list-item--chevron__icon ons-icon fa-plus-circle fa fa-fw"></i>
                             </div>
@@ -142,7 +144,14 @@
                 </ons-toolbar-button>
             </div>
         </ons-toolbar>
-        <div id="home_main"></div>
+        <ons-pull-hook id="pull-hook">
+            <ons-icon icon="fa-refresh"></ons-icon>
+        </ons-pull-hook>
+        <div id="home_main">
+            <div class="loading-now">
+                <ons-progress-circular indeterminate></ons-progress-circular>
+            </div>
+        </div>
     </ons-page>
 </ons-template>
 
@@ -219,6 +228,31 @@
     </ons-page>
 </ons-template>
 
+<ons-template id="search.html">
+    <ons-page>
+        <ons-toolbar>
+            <div class="left">
+                <ons-toolbar-button onclick="BackTab()">
+                    <ons-icon icon="fa-chevron-left"></ons-icon>
+                    戻る
+                </ons-toolbar-button>
+            </div>
+            <div class="center" id="search_title">検索結果</div>
+            <div class="right">
+                <ons-toolbar-button onclick="changeSearchSort()">
+                    <ons-icon icon="fa-sort"></ons-icon>
+                </ons-toolbar-button>
+            </div>
+        </ons-toolbar>
+
+        <div id="search_main">
+            <div class="loading-now">
+                <ons-progress-circular indeterminate></ons-progress-circular>
+            </div>
+        </div>
+    </ons-page>
+</ons-template>
+
 <ons-template id="about.html">
     <ons-page id="about-page">
         <ons-toolbar>
@@ -265,6 +299,18 @@
                     <b id="videoPage_channel"></b><br>
                     by <span id="videoPage_user"></span> <img id="videoPage_icon" class="icon"/>
                 </p>
+                <p>
+                    カテゴリ: <b id="videoPage_category">Unknown</b><br>
+                    ライセンス: <b id="videoPage_license">Unknown</b><br>
+                    言語: <b id="videoPage_language">Unknown</b>
+                </p>
+                <hr>
+                <h4>コメント</h4>
+                <div id="comment">
+                    <div class="loading-now">
+                        <ons-progress-circular indeterminate></ons-progress-circular>
+                    </div>
+                </div>
             </div>
         </div>
     </ons-page>
@@ -287,7 +333,7 @@
         </div>
         <ons-row>
             <ons-col>
-                <ons-range style="width: 100%;" value="25" modifier="material" id="VideoRange" onchange="changeTimeAbsolute(this.value)"></ons-range>
+                <ons-range style="width: 100%;" value="0" modifier="material" id="VideoRange" onchange="changeTimeAbsolute(this.value);"></ons-range>
             </ons-col>
             <ons-col width="40px" style="text-align: center; line-height: 31px;">
                 <span id="videoTime"></span>
@@ -305,7 +351,7 @@
         </div>
         <div class="right" id="BoxDesc">
             <div id="videoname"></div>
-            <div class="y-center" style="padding-top: 10px">
+            <div class="y-center w-max" style="padding-top: 10px">
                 <ons-button modifier="quiet" onclick="changeTime(-15)"><ruby><rb><i class="fa fa-backward fa-fw black"></i></rb><rt class="black">15s</rt></ruby></ons-button>
                 <ons-button modifier="quiet" onclick="changePlaying()"><i class="fa fa-pause fa-fw fa-2x black" id="VideoBox_Play"></i></ons-button>
                 <ons-button modifier="quiet" onclick="changeTime(15)"><ruby><rb><i class="fa fa-forward fa-fw black"></i></rb><rt class="black">15s</rt></ruby></ons-button>
@@ -315,6 +361,11 @@
 </ons-toast>
 
 <div id="alert_list">
+    <ons-toast id="ErrorToast">
+        エラーが発生しました。:<br>
+        <span id="error_box"></span>
+    </ons-toast>
+
     <ons-modal direction="up" id="now_loading">
         <div style="text-align: center">
             <p>
