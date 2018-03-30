@@ -390,9 +390,7 @@ function simple_open() {
   if (instance_config[inst]["glitch_soc"]) $("#localonly_bt_simple").removeClass("invisible");
   if (instance_config[inst]["markdown"]) $("#md_note_simple").removeClass("invisible");
 
-  document.getElementById("simple_toot_TL_input").rows = 3;
   $("#simple_toot_TL_toolbar").addClass("simple_toot_open");
-  $("#simple_more").removeClass("invisible");
 
   $("#dial_main").addClass("fab_simple_toot_open");
   $("#dial_TL").addClass("fab_simple_toot_open");
