@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <title>KnzkApp for PC</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="Content-Security-Policy" content="default-src * knzkapp: data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
     <script src="components/loader.js"></script>
@@ -15,7 +16,6 @@
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/onsen/2.8.3/css/onsen-css-components.css">
     -->
     <script src="lib/raven.min.js" async></script>
-    <script src="lib/jquery-3.2.1.slim.min.js" async></script>
     <script src="lib/twitter.relative.time.min.js" async></script>
     <script src="lib/fetch.js" async></script>
     <script src="lib/blob-util.min.js" async></script>
@@ -30,6 +30,8 @@
     <link rel="stylesheet" id="theme_css">
     <link rel="stylesheet" id="css_toolbar_android">
     <script>
+      window.jQuery = window.$ = require('./lib/jquery-3.2.1.slim.min');
+
       const version = "KnzkApp 1.1.1";
 
       var now_TL = "";
@@ -105,7 +107,7 @@
   </head>
   <body>
     <ons-splitter>
-      <ons-splitter-side id="splitter-menu" side="left" width="280px" collapse animation="reveal">
+      <ons-splitter-side id="splitter-menu" side="left" width="200px" collapse animation="push">
         <ons-page>
           <ons-list>
             <ons-list-item class="splitter-profile-item" id="splitter-profile-bg">
@@ -297,9 +299,6 @@
       <ons-page id="usermenu-page">
         <ons-toolbar>
           <div class="left">
-            <ons-toolbar-button onclick="fn.open()">
-              <ons-icon icon="fa-bars"></ons-icon>
-            </ons-toolbar-button>
           </div>
           <div class="center">ユーザーメニュー</div>
         </ons-toolbar>
@@ -475,9 +474,6 @@
                   <ons-icon icon="fa-clipboard"></ons-icon>
                 </ons-button>
                 <ons-button modifier="quiet" class="no-rd" id="toot_limit_simple">4096</ons-button>
-                <ons-button modifier="quiet" class="no-rd" onclick="simple_close()">
-                  <ons-icon icon="fa-chevron-down"></ons-icon>
-                </ons-button>
               </ons-list-item>
             </ons-list>
           </form>
@@ -608,9 +604,6 @@
       <ons-page>
         <ons-toolbar>
           <div class="left" id="alert_button">
-            <ons-toolbar-button onclick="fn.open()">
-              <ons-icon icon="fa-bars"></ons-icon>
-            </ons-toolbar-button>
           </div>
           <div class="center">通知</div>
           <div class="right">
@@ -1494,9 +1487,6 @@
       <ons-page>
         <ons-toolbar>
           <div class="left">
-            <ons-toolbar-button onclick="fn.open()">
-              <ons-icon icon="fa-bars"></ons-icon>
-            </ons-toolbar-button>
           </div>
           <div class="center" id="olist_title">読み込み中...</div>
         </ons-toolbar>

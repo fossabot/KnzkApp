@@ -30,11 +30,7 @@ function login_open(domain) {
     localStorage.setItem('knzkapp_tmp_cid', json["client_id"]);
     localStorage.setItem('knzkapp_tmp_scr', json["client_secret"]);
     var url = 'https://' + inst_domain_tmp + '/oauth/authorize?response_type=code&redirect_uri=' + uri + '&scope=read write follow&client_id=' + json["client_id"];
-    if (platform === "ios") {
-      openURL(url);
-    } else {
-      window.open(url, "_system");
-    }
+    openURL(url);
     if (os_name === "PC") {
       ons.notification.prompt('認証コードを入力してください<br>(空欄でキャンセル)', {title: 'ログイン'}).then(function (code) {
         if (code) {
@@ -263,7 +259,7 @@ function account_list() {
 
 function open_addaccount() {
   var menu = document.getElementById('splitter-menu');
-  document.querySelector('#navigator').bringPageTop("login.html", {animation: "slide"}).then(menu.close.bind(menu));
+  document.querySelector('#navigator').bringPageTop("login.html", {animation: "slide"});
 }
 
 function clearAllAccount() {

@@ -400,14 +400,7 @@ function simple_open() {
   renderEmoji(document.getElementById("emoji_list_popover"));
 }
 
-function simple_close() {
-  document.getElementById("simple_toot_TL_input").rows = 1;
-  $("#simple_toot_TL_toolbar").removeClass("simple_toot_open");
-  $("#simple_more").addClass("invisible");
-
-  $("#dial_main").removeClass("fab_simple_toot_open");
-  $("#dial_TL").removeClass("fab_simple_toot_open");
-}
+function simple_close() {}
 
 function add_emoji_simple(addtext, mode) {
   // https://qiita.com/noraworld/items/d6334a4f9b07792200a5

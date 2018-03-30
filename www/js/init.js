@@ -124,8 +124,10 @@ function init() {
 
             document.querySelector('#navigator').resetToPage('home.html');
             initevent();
+            document.getElementById('splitter-menu').open();
 
             setTimeout(function () {
+              $("ons-splitter-mask").remove();
               TL_change(timeline_default_tab);
               now_TL = timeline_config[timeline_default_tab];
               timeline_now_tab = timeline_default_tab;
@@ -223,6 +225,7 @@ function initevent() {
     pageid = event.enterPage.id;
     if (event.enterPage.id === "home") {
       setTimeout(function () {
+        simple_open();
         document.getElementById("toot_limit_simple").innerHTML = toot_limit;
         $("#post_mode_simple").val(default_post_visibility);
         document.getElementById("post_mode_icon_simple").className = "ons-icon fa-fw fa fa-" + visibility_name(default_post_visibility);
@@ -377,12 +380,6 @@ function initevent() {
       document.getElementById('home_title').innerHTML = TLname(timeline_config[event.index]);
       now_TL = timeline_config[event.index];
       showTL(null, null, null, true);
-    }
-  });
-
-  $(document).on('click', '.timeline', function (event) {
-    if ($("#navigator").attr("page") === "home.html") {
-      simple_close();
     }
   });
 

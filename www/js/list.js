@@ -8,7 +8,7 @@ function list(mode, title, more_load, mode_toot, navmode) {
   } else {
     var menu = document.getElementById('splitter-menu');
     $.when(
-      document.querySelector('#navigator').resetToPage("olist.html", {animation: "none"}).then(menu.close.bind(menu))
+      document.querySelector('#navigator').resetToPage("olist.html", {animation: "none"})
     ).done(function () {
       list_n(mode, title, more_load, mode_toot)
     });

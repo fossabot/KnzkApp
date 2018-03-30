@@ -14,7 +14,7 @@ function AccountCard(acct) {
 function show_account(id, navmode) {
   if (navmode) {
     var menu = document.getElementById('splitter-menu');
-    document.querySelector('#navigator').bringPageTop('account.html').then(menu.close.bind(menu));
+    document.querySelector('#navigator').bringPageTop('account.html');
   } else {
     loadNav('account.html');
   }

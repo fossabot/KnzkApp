@@ -719,3 +719,7 @@ img.emoji {
   white-space: nowrap;
   width: 80%;
 }
+
+#splitter-content {
+  width: calc(100% - 200px);
+}
