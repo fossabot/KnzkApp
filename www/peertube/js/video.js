@@ -76,6 +76,7 @@ function showVideo(id) {
                     }, false);
                     setTimeout(function () {
                         openController();
+                      changePlaying(1);
                     }, 500);
                 })
             }
