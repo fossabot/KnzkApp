@@ -30,3 +30,13 @@ function openURL(url) {
 function elemid(id) {
   return document.getElementById(id);
 }
+
+function changeOrientation() {
+  var lockto = getOrientation() === "landscape" ? "portrait" : "landscape";
+  screen.orientation.lock(lockto);
+}
+
+function getOrientation() {
+  var type = screen.orientation.type;
+  return type.match(/landscape/i) ? "landscape" : "portrait";
+}

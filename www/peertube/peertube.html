@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <meta http-equiv="Content-Security-Policy" content="default-src * knzkapp: blob: data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <meta http-equiv="Content-Security-Policy" content="default-src * android-webview-video-poster: knzkapp: blob: data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
     <script src="../components/loader.js"></script>
     <link rel="stylesheet" href="../components/loader.css">
 
@@ -323,8 +323,14 @@
             <i class="fa fa-angle-down fa-fw white_c"></i></ons-button>
         </div>
         <div class="right" style="text-align: right">
-          <ons-button modifier="quiet" onclick="OpenMenu()" style="padding: 4px 0">
+          <ons-button modifier="quiet" onclick="closeController()" style="padding: 4px 5px">
+            <i class="fa fa-window-close-o fa-fw white_c"></i></ons-button>
+
+          <ons-button modifier="quiet" onclick="OpenMenu()" style="padding: 4px 5px">
             <i class="fa fa-bars fa-fw white_c"></i></ons-button>
+
+          <ons-button modifier="quiet" onclick="changeOrientation()" style="padding: 4px 0">
+            <i class="fa fa-expand fa-fw white_c"></i></ons-button>
         </div>
       </div>
       <div class="VideoController_bottom">

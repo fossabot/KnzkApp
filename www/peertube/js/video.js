@@ -28,7 +28,7 @@ function showVideo(id) {
   } else {
     if (nowPlaying) {
       $("#videomainbox").empty();
-      document.getElementById("videoname").innerText = "";
+      document.getElementById("videoname").textContent = "";
     } else {
       $("#VideoController").addClass("invisible");
       elemid("VideoController").show({animation: 'fall'});
@@ -54,7 +54,7 @@ function showVideo(id) {
             return file.name;
           });
           file.appendTo('#videomainbox');
-          elemid("videoname").innerText = json["name"];
+          elemid("videoname").textContent = json["name"];
           var video = document.querySelector("#videomainbox > video");
           video.controls = false;
           elemid("VideoBox_Play").className = "fa fa-fw fa-2x black fa-pause";
@@ -62,7 +62,7 @@ function showVideo(id) {
           openVideo();
           video.addEventListener("timeupdate", function () {
             elemid("VideoRange").value = this.currentTime / this.duration * 100;
-            elemid("videoTime").innerText = generateTime(this.currentTime);
+            elemid("videoTime").textContent = generateTime(this.currentTime);
           }, false);
           video.addEventListener("ended", function () {
             changePlaying(0);
@@ -103,26 +103,41 @@ function openVideo() {
   setTimeout(function () {
     setVideoheight();
     renderComment(nowPlaying);
-    elemid("videoPage_name").innerText = VideoData[nowPlaying]["name"];
-    elemid("videoPage_time").innerText = displayTime('new', VideoData[nowPlaying]['createdAt']);
-    elemid("videoPage_views").innerText = VideoData[nowPlaying]["views"];
-    elemid("videoPage_channel").innerText = VideoData[nowPlaying]["channel"]["displayName"];
-    elemid("videoPage_user").innerText = returnName(VideoData[nowPlaying]);
+    elemid("videoPage_name").textContent = VideoData[nowPlaying]["name"];
+    elemid("videoPage_time").textContent = displayTime('new', VideoData[nowPlaying]['createdAt']);
+    elemid("videoPage_views").textContent = VideoData[nowPlaying]["views"];
+    elemid("videoPage_channel").textContent = VideoData[nowPlaying]["channel"]["displayName"];
+    elemid("videoPage_user").textContent = returnName(VideoData[nowPlaying]);
     elemid("videoPage_icon").src = "https://" + inst_p + VideoData[nowPlaying]['account']['avatar']['path'];
-    elemid("videoPage_category").innerText = VideoData[nowPlaying]['category']['label'];
-    elemid("videoPage_licence").innerText = VideoData[nowPlaying]['licence']['label'];
-    elemid("videoPage_language").innerText = VideoData[nowPlaying]['language']['label'];
+    elemid("videoPage_category").textContent = VideoData[nowPlaying]['category']['label'];
+    elemid("videoPage_license").textContent = VideoData[nowPlaying]['licence']['label'];
+    elemid("videoPage_language").textContent = VideoData[nowPlaying]['language']['label'];
   }, 500);
 }
 
 function setVideoheight() {
-  var video = $("#videomainbox > video");
-  $(".VideoBackController").css({"height": (video.innerHeight()) + "px"});
-  $("#VideoController > .toast").css({"height": (video.innerHeight()) + "px"});
-  $("#videoPage").css({"padding-top": (video.innerHeight()) + "px"});
+  var video = $("#videomainbox > video"), height;
+  console.log(video.innerHeight());
+  if (getOrientation() === "landscape" && ons.isWebView()) {
+    height = "100%";
+  } else {
+    if (video.innerHeight() <= window.innerHeight * 0.4) {
+      height = video.innerHeight();
+    } else {
+      height = window.innerHeight * 0.4;
+    }
+    height += "px";
+  }
+  console.log(height);
+
+  $(".VideoBackController").css({"height": height});
+  $("#VideoController > .toast").css({"height": height});
+  $("#videoPage").css({"padding-top": height});
+  $("video").css({"height": height});
 }
 
 function backVideo() {
+  $("video").css({"height": ""});
   $("body").removeClass("ons-ios-scroll ons-ios-scroll-fix");
   $(".VideoBox").removeClass("VideoonPage");
   $("#BoxDesc").removeClass("invisible");
@@ -131,6 +146,7 @@ function backVideo() {
   $("#FlexBox").addClass("FlexBox");
   setTimeout(function () {
     $("#VideoController").addClass("invisible");
+    screen.orientation.unlock();
   }, 50);
   BackTab('down');
 }
@@ -165,6 +181,7 @@ function changeTimeAbsolute(time) {
 
 function openController() {
   if (elemid("BoxDesc").className.indexOf("invisible") !== -1) {
+    setVideoheight();
     var i = 0;
     if (is_openController.length !== 0) i = is_openController.length;
     is_openController[i] = true;
@@ -172,10 +189,16 @@ function openController() {
     setTimeout(function () {
       if (!is_openController[i + 1]) {
         $("#VideoController").addClass("invisible");
-        is_openController = [];
+        is_openController[i] = null;
       }
     }, 5000);
   }
+}
+
+function closeController() {
+  setTimeout(function () {
+    $("#VideoController").addClass("invisible");
+  }, 100);
 }
 
 function OpenMenu() {
@@ -221,7 +244,7 @@ function changeRate() {
 }
 
 function showError(text) {
-  elemid("error_box").innerText = text;
+  elemid("error_box").textContent = text;
   elemid("ErrorToast").show({animation: 'fall'});
   setTimeout(function () {
     elemid("ErrorToast").hide();

@@ -64,6 +64,9 @@
   background-color: #fafafa;
   border-radius: 4px;
   border: 1px solid #b2b2b2;
+  padding: 0;
+  line-height: initial;
+  max-height: 20%;
 }
 
 .VideoonPage {
@@ -91,11 +94,6 @@
   white-space: normal;
 }
 
-#DisplayBox > .toast {
-  padding: 0;
-  line-height: initial;
-}
-
 #DisplayBox .toast__message {
   margin-right: 5px;
 }
@@ -116,6 +114,7 @@
   width: 100%;
   position: fixed;
   top: 0;
+  background-color: #000;
 }
 
 #videomainbox, video {
@@ -209,4 +208,8 @@
 .loading-now {
   text-align: center;
   font-size: xx-large;
+}
+
+#home_main {
+  padding-bottom: 35%;
 }

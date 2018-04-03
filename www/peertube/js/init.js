@@ -41,11 +41,11 @@ function init() {
 }
 
 function initevent() {
-  document.addEventListener("change", function (event) {
-    if (event.isPortrait !== undefined && NowPlaying) {
+  window.addEventListener("orientationchange", function() {
+    if (screen.orientation.type && NowPlaying) {
       setVideoheight();
     }
-  }, false);
+  });
 }
 
 function initph() {
