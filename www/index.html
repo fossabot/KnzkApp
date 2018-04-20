@@ -2,7 +2,6 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>KnzkApp for PC</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="Content-Security-Policy" content="default-src * knzkapp: data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
     <script src="components/loader.js"></script>
@@ -21,18 +20,20 @@
     <script src="lib/blob-util.min.js" async></script>
     <script src="lib/atrament.min.js" async></script>
     <script src="lib/twemoji/twemoji.min.js" async></script>
+    <script>
+      window.jQuery = window.$ = require('./lib/jquery-3.2.1.slim.min');
+    </script>
     <link rel="stylesheet" href="css/theme-roller/components.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/enquete.css">
     <link rel="stylesheet" href="css/custom-size.css">
+    <link rel="stylesheet" href="css/electron.css">
     <link rel="stylesheet" id="css_md">
     <link rel="stylesheet" id="theme_css">
     <link rel="stylesheet" id="css_toolbar_android">
     <script>
-      window.jQuery = window.$ = require('./lib/jquery-3.2.1.slim.min');
-
-      const version = "KnzkApp 1.1.1";
+      const version = "KnzkApp 1.3.1";
 
       var now_TL = "";
       var last_load_TL = "";
@@ -84,11 +85,16 @@
       var timeline_config = {};
       var timeline_now_tab = 0;
       var timeline_default_tab = 0;
+      var Notification_ws = null;
+      var Notification_num = 0;
+      var FCM_token = null;
     </script>
     <script src="config/instance.js"></script>
     <script src="config/config.js"></script>
     <script src="js/tutorial.js"></script>
+    <script src="js/notification.js"></script>
     <script src="js/bookmark.js"></script>
+    <script src="js/filter.js"></script>
     <script src="js/emoji.js"></script>
     <script src="js/log.js"></script>
     <script src="js/config.js"></script>
@@ -107,7 +113,7 @@
   </head>
   <body>
     <ons-splitter>
-      <ons-splitter-side id="splitter-menu" side="left" width="200px" collapse animation="push">
+      <ons-splitter-side id="splitter-menu" side="left" width="280px" collapse animation="reveal">
         <ons-page>
           <ons-list>
             <ons-list-item class="splitter-profile-item" id="splitter-profile-bg">
@@ -166,7 +172,7 @@
                     <i class="list-item__icon list-item--chevron__icon ons-icon fa-bell fa fa-fw"></i>
                   </div>
                   <div class="center">
-                    通知
+                    通知 <span class="notification invisible noti_unread">1</span>
                   </div>
                 </ons-list-item>
                 <ons-list-item modifier="chevron" tappable onclick="list('favourites', 'お気に入り一覧', null, 'toot')" id="menu-fav-page" class="invisible">
@@ -210,55 +216,6 @@
                   </div>
                 </ons-list-item>
               </ons-list>
-              <ons-bottom-toolbar id="simple_toot_TL_toolbar">
-                <form id="simple_toot_form">
-                  <input type="hidden" id="nsfw_input_simple">
-                  <input type="hidden" id="localonly_input_simple">
-                  <input type="hidden" id="post_mode_simple" value="public">
-                  <input type="hidden" id="post_reply_simple">
-                  <input type="file" id="post_file_simple" class="invisible" onchange="up_file(true)" accept="image/*;capture=camera">
-                  <ons-list>
-                    <ons-list-item style="padding-left: 0" class="simple-toot">
-                      <div class="center" style="padding-right: 0;">
-                        <textarea class="textarea w-max" rows="3" placeholder="トゥート！" id="simple_toot_TL_input" onFocus="simple_open()" onkeyup="check_limit(value, 'toot_limit_simple', 'toot-button_simple', 'simple_toot_cw');"></textarea>
-                      </div>
-                    </ons-list-item>
-                    <ons-list-item style="padding-left: 0" class="simple-toot">
-                      <div class="right">
-                        <ons-button modifier="quiet" class="no-rd" id="toot_limit_simple">4096</ons-button>
-                        <ons-button modifier="quiet" class="no-rd" onclick="post('simple_toot_TL_input', {cw:document.getElementById('simple_toot_cw').value, visibility:document.getElementById('post_mode_simple').value, sensitive:document.getElementById('nsfw_input_simple').value, in_reply_to_id: document.getElementById('post_reply_simple').value, local_only: document.getElementById('localonly_input_simple').value}, true)" id="toot-button_simple">
-                          <ons-icon icon="fa-paper-plane-o"></ons-icon>
-                        </ons-button>
-                      </div>
-                    </ons-list-item>
-                  </ons-list>
-                  <ons-list>
-                    <ons-list-item style="padding-left: 0" class="simple-toot">
-                      <ons-button modifier="quiet" onclick="post_mode(true)" class="no-rd" id="post_mode_bt_simple">
-                        <ons-icon icon="fa-globe" id="post_mode_icon_simple"></ons-icon>
-                      </ons-button>
-                      <ons-button modifier="quiet" onclick="showPopover(this, 'image_popover')" class="no-rd" id="new_up_bt_simple">
-                        <ons-icon icon="fa-picture-o"></ons-icon>
-                      </ons-button>
-                      <ons-button modifier="quiet" onclick="showPopover(this, 'cw_popover')" class="no-rd">CW</ons-button>
-                      <ons-button onclick="post_localonly(true)" id="localonly_bt_simple" modifier="quiet" class="no-rd invisible">
-                        <ons-icon icon="fa-home"></ons-icon>
-                      </ons-button>
-                    </ons-list-item>
-                    <ons-list-item style="padding-left: 0" class="simple-toot">
-                      <ons-button modifier="quiet" onclick="showPopover(this, 'tools_popover')" class="no-rd" id="tools_bt_simple">
-                        <ons-icon icon="fa-magic"></ons-icon>
-                      </ons-button>
-                      <ons-button modifier="quiet" onclick="showPopover(this, 'emoji_popover')" class="no-rd" id="simple_emoji_bt">
-                        <ons-icon icon="fa-smile-o"></ons-icon>
-                      </ons-button>
-                      <ons-button modifier="quiet" onclick="showPopover(this, 'cp_popover')" class="no-rd invisible" id="simple_cp_bt">
-                        <ons-icon icon="fa-clipboard"></ons-icon>
-                      </ons-button>
-                    </ons-list-item>
-                  </ons-list>
-                </form>
-              </ons-bottom-toolbar>
             </div>
             <form id="music-form" style="display: none;">
               <ons-list>
@@ -348,6 +305,9 @@
       <ons-page id="usermenu-page">
         <ons-toolbar>
           <div class="left">
+            <ons-toolbar-button onclick="fn.open()">
+              <ons-icon icon="fa-bars"></ons-icon>
+            </ons-toolbar-button>
           </div>
           <div class="center">ユーザーメニュー</div>
         </ons-toolbar>
@@ -400,6 +360,22 @@
               ブロックしたユーザー
             </div>
           </ons-list-item>
+          <ons-list-item modifier="chevron" tappable onclick="list('domain_blocks', '非表示にしたドメイン', null, 'domain', true)">
+            <div class="left">
+              <i class="list-item__icon list-item--chevron__icon ons-icon fa-minus-circle fa fa-fw"></i>
+            </div>
+            <div class="center">
+              非表示にしたドメイン
+            </div>
+          </ons-list-item>
+          <ons-list-item modifier="chevron" tappable onclick="loadNav('config_filter.html')">
+            <div class="left">
+              <i class="list-item__icon list-item--chevron__icon ons-icon fa-filter fa fa-fw"></i>
+            </div>
+            <div class="center">
+              フィルター
+            </div>
+          </ons-list-item>
           <ons-list-item modifier="chevron" tappable onclick="LoadrepStatus()">
             <div class="left">
               <i class="list-item__icon list-item--chevron__icon ons-icon fa-gavel fa fa-fw"></i>
@@ -442,13 +418,15 @@
             </ons-toolbar-button>
           </div>
         </ons-toolbar>
-        <ons-tabbar swipeable hide-tabs id="tl_tabs">
-          <ons-tab page="tl-0.html" active></ons-tab>
-          <ons-tab page="tl-1.html"></ons-tab>
-          <ons-tab page="tl-2.html"></ons-tab>
-          <ons-tab page="tl-3.html"></ons-tab>
-          <ons-tab page="tl-4.html"></ons-tab>
-        </ons-tabbar>
+        <ons-gesture-detector>
+          <ons-tabbar hide-tabs id="tl_tabs">
+            <ons-tab page="tl-0.html" active></ons-tab>
+            <ons-tab page="tl-1.html"></ons-tab>
+            <ons-tab page="tl-2.html"></ons-tab>
+            <ons-tab page="tl-3.html"></ons-tab>
+            <ons-tab page="tl-4.html"></ons-tab>
+          </ons-tabbar>
+        </ons-gesture-detector>
         <ons-speed-dial position="bottom right" direction="up" onclick="opendial()" id="dial_main" class="invisible">
           <ons-fab>
             <ons-icon icon="fa-bell" id="dial-icon"></ons-icon>
@@ -477,6 +455,145 @@
             <ons-icon icon="md-collection-image-o" id="sd_icon4"></ons-icon>
           </ons-speed-dial-item>
         </ons-speed-dial>
+        <ons-bottom-toolbar id="simple_toot_TL_toolbar">
+          <form id="simple_toot_form">
+            <input type="hidden" id="nsfw_input_simple">
+            <input type="hidden" id="localonly_input_simple">
+            <input type="hidden" id="post_mode_simple" value="public">
+            <input type="hidden" id="post_reply_simple">
+            <input type="file" id="post_file_simple" class="invisible" onchange="up_file(true)" accept="image/*;capture=camera">
+            <ons-list>
+              <ons-list-item style="padding-left: 0" class="simple-toot">
+                <div class="left" style="padding-right: 6px">
+                  <ons-button modifier="quiet" onclick="fn.open()" class="no-rd">
+                    <ons-icon icon="fa-bars"></ons-icon>
+                    <span class="notification invisible noti_unread">1</span>
+                  </ons-button>
+                </div>
+                <div class="center">
+                  <textarea class="textarea w-max" rows="1" placeholder="トゥート！" id="simple_toot_TL_input" onFocus="simple_open()" onkeyup="check_limit(value, 'toot_limit_simple', 'toot-button_simple', 'simple_toot_cw');"></textarea>
+                </div>
+                <div class="right" style="padding-right: 0">
+                  <ons-button modifier="quiet" class="no-rd" onclick="post('simple_toot_TL_input', {cw:document.getElementById('simple_toot_cw').value, visibility:document.getElementById('post_mode_simple').value, sensitive:document.getElementById('nsfw_input_simple').value, in_reply_to_id: document.getElementById('post_reply_simple').value, local_only: document.getElementById('localonly_input_simple').value}, true)" id="toot-button_simple">
+                    <ons-icon icon="fa-paper-plane-o"></ons-icon>
+                  </ons-button>
+                </div>
+              </ons-list-item>
+            </ons-list>
+            <ons-list>
+              <ons-list-item style="padding-left: 0" class="simple-toot invisible" id="simple_more">
+                <ons-button modifier="quiet" onclick="post_mode(true)" class="no-rd" id="post_mode_bt_simple">
+                  <ons-icon icon="fa-globe" id="post_mode_icon_simple"></ons-icon>
+                </ons-button>
+                <ons-button modifier="quiet" onclick="showPopover(this, 'image_popover')" class="no-rd" id="new_up_bt_simple">
+                  <ons-icon icon="fa-picture-o"></ons-icon>
+                </ons-button>
+                <ons-button modifier="quiet" onclick="showPopover(this, 'cw_popover')" class="no-rd">CW</ons-button>
+                <ons-button onclick="post_localonly(true)" id="localonly_bt_simple" modifier="quiet" class="no-rd invisible">
+                  <ons-icon icon="fa-home"></ons-icon>
+                </ons-button>
+                <ons-button modifier="quiet" onclick="showPopover(this, 'tools_popover')" class="no-rd" id="tools_bt_simple">
+                  <ons-icon icon="fa-magic"></ons-icon>
+                </ons-button>
+                <ons-button modifier="quiet" onclick="showPopover(this, 'emoji_popover')" class="no-rd" id="simple_emoji_bt">
+                  <ons-icon icon="fa-smile-o"></ons-icon>
+                </ons-button>
+                <ons-button modifier="quiet" onclick="showPopover(this, 'cp_popover')" class="no-rd invisible" id="simple_cp_bt">
+                  <ons-icon icon="fa-clipboard"></ons-icon>
+                </ons-button>
+                <ons-button modifier="quiet" class="no-rd" id="toot_limit_simple">4096</ons-button>
+                <ons-button modifier="quiet" class="no-rd" onclick="simple_close()">
+                  <ons-icon icon="fa-chevron-down"></ons-icon>
+                </ons-button>
+              </ons-list-item>
+            </ons-list>
+          </form>
+        </ons-bottom-toolbar>
+        <ons-popover direction="up" id="tools_popover">
+          <div style="padding: 10px; text-align: center;">
+            <p>
+              <ons-button onclick="hidePopover('tools_popover');showPopover(document.getElementById('tools_bt_simple'), 'vote_popover')" class="w-max invisible" id="vote_bt_simple">
+                <ons-icon icon="fa-align-left"></ons-icon>
+                Enquete
+              </ons-button>
+              <ons-button onclick="hidePopover('tools_popover');show_bbcodegen('simple_toot_TL_input')" class="w-max invisible" style="margin-top: 5px" id="bbcode_bt_simple">
+                <ons-icon icon="fa-font"></ons-icon>
+                BBCode
+              </ons-button>
+              <ons-button onclick="hidePopover('tools_popover');openDoodle('simple')" class="w-max" style="margin-top: 5px">
+                <ons-icon icon="fa-paint-brush"></ons-icon>
+                Doodle
+              </ons-button>
+              <ons-button onclick="hidePopover('tools_popover');add_emoji_simple('｜漢字《》')" class="w-max invisible" style="margin-top: 5px" id="yomigana_bt_simple">読み仮名</ons-button>
+            <p id="md_note_simple" class="invisible">*MarkDownはスワイプメニュー→新規トゥートから使用できます</p>
+            </p>
+            <p>
+              <ons-button onclick="hidePopover('tools_popover')" class="w-max">閉じる</ons-button>
+            </p>
+          </div>
+        </ons-popover>
+        <ons-popover direction="up" id="cp_popover">
+          <div style="padding: 10px; text-align: center;">
+            <p>
+              <ons-button onclick="hidePopover('cp_popover');copy(document.getElementById('simple_toot_TL_input').value)" class="w-max">全てコピー</ons-button>
+              <ons-button onclick="hidePopover('cp_popover');paste_simple()" style="margin-top: 5px" class="w-max">ペースト</ons-button>
+            </p>
+            <p>
+              <ons-button onclick="hidePopover('cp_popover')" class="w-max">閉じる</ons-button>
+            </p>
+          </div>
+        </ons-popover>
+        <ons-popover direction="up" id="cw_popover">
+          <div style="padding: 10px; text-align: center;">
+            <p>
+              <ons-input id="simple_toot_cw" modifier="underbar" placeholder="警告文を書いてください" class="w-max black_text" onkeyup="check_limit(value, 'toot_limit_simple', 'toot-button_simple', 'simple_toot_TL_input');"></ons-input>
+            </p>
+            <p>
+              <ons-button onclick="hidePopover('cw_popover')" class="w-max">閉じる</ons-button>
+            </p>
+          </div>
+        </ons-popover>
+        <ons-popover direction="up" id="image_popover">
+          <div style="padding: 10px; text-align: center;">
+            <p>
+            <div id="image_list_simple"></div>
+            </p>
+            <p>
+              <ons-button onclick="$('#post_file_simple').click()" class="w-max">画像追加</ons-button>
+            </p>
+            <p>
+              <ons-button onclick="post_nsfw(true)" style="margin-bottom: 5px" id="nsfw_bt_simple" modifier="quiet">
+                <ons-icon icon="fa-eye"></ons-icon>
+                NSFW
+              </ons-button>
+              <ons-button onclick="hidePopover('image_popover')" class="w-max">閉じる</ons-button>
+            </p>
+          </div>
+        </ons-popover>
+        <ons-popover direction="up" id="vote_popover">
+          <div style="padding: 10px; text-align: center;">
+            <p>
+            <form id="simple_vote">
+              <ons-input id="vote_new_1_simple" modifier="underbar" placeholder="項目1" class="w-max black_text"></ons-input>
+              <ons-input id="vote_new_2_simple" modifier="underbar" placeholder="項目2" class="w-max black_text"></ons-input>
+              <ons-input id="vote_new_3_simple" modifier="underbar" placeholder="項目3(任意)" class="w-max black_text"></ons-input>
+              <ons-input id="vote_new_4_simple" modifier="underbar" placeholder="項目4(任意)" class="w-max black_text"></ons-input>
+              <ons-select id="vote_new_time_simple" class="w-max black_text invisible" modifier="underbar">
+                <option value="30">30秒</option>
+                <option value="60">1分</option>
+                <option value="180">3分</option>
+                <option value="300">5分</option>
+                <option value="600">10分</option>
+                <option value="3600">1時間</option>
+                <option value="86400">1日</option>
+              </ons-select>
+            </form>
+            </p>
+            <p>
+              <ons-button onclick="hidePopover('vote_popover')" class="w-max">閉じる</ons-button>
+            </p>
+          </div>
+        </ons-popover>
       </ons-page>
     </ons-template>
     <ons-template id="tl-0.html">
@@ -518,6 +635,9 @@
       <ons-page>
         <ons-toolbar>
           <div class="left" id="alert_button">
+            <ons-toolbar-button onclick="fn.open()">
+              <ons-icon icon="fa-bars"></ons-icon>
+            </ons-toolbar-button>
           </div>
           <div class="center">通知</div>
           <div class="right">
@@ -624,6 +744,14 @@
               ユーザー情報編集
             </div>
           </ons-list-item>
+          <ons-list-item modifier="chevron" tappable onclick="loadNav('config_notification.html')">
+            <div class="left">
+              <i class="list-item__icon list-item--chevron__icon ons-icon fa-bell-o fa fa-fw"></i>
+            </div>
+            <div class="center">
+              プッシュ通知設定
+            </div>
+          </ons-list-item>
         </ons-list>
         <ons-list>
           <ons-list-header>タイムライン設定</ons-list-header>
@@ -667,12 +795,9 @@
               <ons-switch onclick="change_conf(1, 'nsfw')" input-id="conf-nsfw"></ons-switch>
             </div>
           </ons-list-item>
-          <ons-list-item>
+          <ons-list-item modifier="chevron" tappable onclick="loadNav('config_collapse.html')">
             <div class="center">
               トゥートの折りたたみ
-            </div>
-            <div class="right">
-              <ons-button onclick="loadNav('config_collapse.html')">設定</ons-button>
             </div>
           </ons-list-item>
           <ons-list-item>
@@ -691,12 +816,9 @@
               <ons-switch onclick="change_conf(1, 'resume_reload')" input-id="conf-resume_reload"></ons-switch>
             </div>
           </ons-list-item>
-          <ons-list-item>
+          <ons-list-item modifier="chevron" tappable onclick="loadNav('config_TL.html')">
             <div class="center">
               タイムライン編集
-            </div>
-            <div class="right">
-              <ons-button onclick="loadNav('config_TL.html')">設定</ons-button>
             </div>
           </ons-list-item>
           <ons-list-item>
@@ -803,7 +925,7 @@
           </ons-list-item>
           <ons-list-item>
             <div class="center">
-              <span class="list-item__title">スワイプしてメニューを開く</span><span class="list-item__subtitle">端末によっては使いづらいです</span>
+              <span class="list-item__title">スワイプモード切替</span><span class="list-item__subtitle">OFF:ジェスチャスワイパー<br>ON:タブスワイパー+メニュー</span>
             </div>
             <div class="right">
               <ons-switch onclick="change_conf(1, 'swipe_menu')" input-id="conf-swipe_menu"></ons-switch>
@@ -823,6 +945,14 @@
             </div>
             <div class="right">
               <ons-switch onclick="change_conf(1, 'SendLog', null, true)" input-id="conf-SendLog"></ons-switch>
+            </div>
+          </ons-list-item>
+          <ons-list-item>
+            <div class="center">
+              未読通知ラベルを表示しない
+            </div>
+            <div class="right">
+              <ons-switch onclick="change_conf(1, 'no_unread_label')" input-id="conf-no_unread_label"></ons-switch>
             </div>
           </ons-list-item>
         </ons-list>
@@ -981,6 +1111,207 @@
         </ons-list>
       </ons-page>
     </ons-template>
+    <ons-template id="config_notification.html">
+      <ons-page id="config_notification-page">
+        <ons-toolbar>
+          <div class="left">
+            <ons-toolbar-button onclick="BackTab()">
+              <ons-icon icon="fa-chevron-left"></ons-icon>
+              設定
+            </ons-toolbar-button>
+          </div>
+          <div class="center">プッシュ通知</div>
+          <div class="right">
+            <ons-toolbar-button onclick="changeNotification(true)">
+              <ons-icon icon="fa-floppy-o"></ons-icon>
+              保存
+            </ons-toolbar-button>
+          </div>
+        </ons-toolbar>
+        <ons-list>
+          <ons-list-item>
+            <div class="center">
+              プッシュ通知を有効化
+            </div>
+            <div class="right">
+              <ons-switch onclick="changeNotification()" input-id="noti-mode"></ons-switch>
+            </div>
+          </ons-list-item>
+        </ons-list>
+        <div class="container"><p><b>*設定を保存するまでサーバー上に更新されません。</b></p></div>
+        <div class="container"><h4>通常の通知</h4></div>
+        <ons-list>
+          <ons-list-header>ミュートする通知 (全体)</ons-list-header>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="noti-mute-all"></ons-checkbox>
+            </label>
+            <label for="noti-mute-all" class="center">すべて</label>
+          </ons-list-item>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="noti-mute-follow"></ons-checkbox>
+            </label>
+            <label for="noti-mute-follow" class="center">フォロー</label>
+          </ons-list-item>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="noti-mute-mention"></ons-checkbox>
+            </label>
+            <label for="noti-mute-mention" class="center">メンション</label>
+          </ons-list-item>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="noti-mute-reblog"></ons-checkbox>
+            </label>
+            <label for="noti-mute-reblog" class="center">ブースト</label>
+          </ons-list-item>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="noti-mute-favourite"></ons-checkbox>
+            </label>
+            <label for="noti-mute-favourite" class="center">お気に入り</label>
+          </ons-list-item>
+        </ons-list>
+        <ons-list>
+          <ons-list-header>ミュートする通知 (ユーザー)</ons-list-header>
+        </ons-list>
+        <div class="container">
+          ユーザーごとの通知制御は<a href="#" onclick="loadNav('config_filter.html')"><b>ユーザーメニュー > フィルター</b></a>より行えます。<br>
+          *ユーザー通知ミュート反映にはアプリの再起動が必要です。
+        </div>
+        <div class="container"><h4>キーワード検知 <button class="button button--outline" style="border-radius: 100%;line-height: initial;" onclick="addKeyWord()"><i class="zmdi zmdi-plus"></i></button></h4>HTLをウォッチします</div>
+        <ons-list id="keyword_list"></ons-list>
+        <p></p>
+      </ons-page>
+    </ons-template>
+
+    <ons-template id="config_filter.html">
+      <ons-page id="config_filter-page">
+        <ons-toolbar>
+          <div class="left">
+            <ons-toolbar-button onclick="BackTab()">
+              <ons-icon icon="fa-chevron-left"></ons-icon>
+              戻る
+            </ons-toolbar-button>
+          </div>
+          <div class="center">フィルター</div>
+          <div class="right">
+            <ons-toolbar-button onclick="loadNav('editFilter.html')">
+              <ons-icon icon="fa-plus"></ons-icon>
+            </ons-toolbar-button>
+          </div>
+        </ons-toolbar>
+        <ons-list id="filter_list"></ons-list>
+        <div class="container">
+          <p>
+            *プッシュ通知ミュートの反映にはアプリの再起動が必要です。
+          </p>
+        </div>
+      </ons-page>
+    </ons-template>
+
+    <ons-template id="editFilter.html">
+      <ons-page id="editfilter-page">
+        <ons-toolbar>
+          <div class="left">
+            <ons-toolbar-button onclick="BackTab()">
+              <ons-icon icon="fa-chevron-left"></ons-icon>
+              戻る
+            </ons-toolbar-button>
+          </div>
+          <div class="center">フィルターの修正/追加</div>
+          <div class="right">
+            <ons-toolbar-button onclick="createFilter()">
+              <ons-icon icon="fa-check"></ons-icon>
+            </ons-toolbar-button>
+          </div>
+        </ons-toolbar>
+        <div class="container">
+          <p>
+            <ons-input id="userid_filter" modifier="underbar" placeholder="ユーザーID (例: knzk@knzk.me)" class="w-max"></ons-input>
+          </p>
+        </div>
+        <ons-list>
+          <ons-list-header>表示をミュート</ons-list-header>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="filter_all"></ons-checkbox>
+            </label>
+            <label for="filter_all" class="center">すべて</label>
+          </ons-list-item>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="filter_toot"></ons-checkbox>
+            </label>
+            <label for="filter_toot" class="center">トゥート</label>
+          </ons-list-item>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="filter_follow"></ons-checkbox>
+            </label>
+            <label for="filter_follow" class="center">フォロー通知</label>
+          </ons-list-item>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="filter_mention"></ons-checkbox>
+            </label>
+            <label for="filter_mention" class="center">メンション通知</label>
+          </ons-list-item>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="filter_boost"></ons-checkbox>
+            </label>
+            <label for="filter_boost" class="center">ブースト通知</label>
+          </ons-list-item>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="filter_fav"></ons-checkbox>
+            </label>
+            <label for="filter_fav" class="center">お気に入り通知</label>
+          </ons-list-item>
+
+          <ons-list-header>プッシュ通知をミュート</ons-list-header>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="filterpush_all"></ons-checkbox>
+            </label>
+            <label for="filterpush_all" class="center">すべて</label>
+          </ons-list-item>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="filterpush_keyword"></ons-checkbox>
+            </label>
+            <label for="filterpush_keyword" class="center">キーワード検知</label>
+          </ons-list-item>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="filterpush_follow"></ons-checkbox>
+            </label>
+            <label for="filterpush_follow" class="center">フォロー</label>
+          </ons-list-item>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="filterpush_mention"></ons-checkbox>
+            </label>
+            <label for="filterpush_mention" class="center">メンション</label>
+          </ons-list-item>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="filterpush_reblog"></ons-checkbox>
+            </label>
+            <label for="filterpush_reblog" class="center">ブースト</label>
+          </ons-list-item>
+          <ons-list-item tappable>
+            <label class="left">
+              <ons-checkbox input-id="filterpush_favourite"></ons-checkbox>
+            </label>
+            <label for="filterpush_favourite" class="center">お気に入り</label>
+          </ons-list-item>
+        </ons-list>
+      </ons-page>
+    </ons-template>
+
     <ons-template id="config_TL.html">
       <ons-page id="config_TL-page">
         <ons-toolbar>
@@ -1401,6 +1732,9 @@
       <ons-page>
         <ons-toolbar>
           <div class="left">
+            <ons-toolbar-button onclick="fn.open()">
+              <ons-icon icon="fa-bars"></ons-icon>
+            </ons-toolbar-button>
           </div>
           <div class="center" id="olist_title">読み込み中...</div>
         </ons-toolbar>
@@ -1803,93 +2137,6 @@
         <div id="emoji_list_popover" class="emoji_list_scroll" style="height: 250px;" data-isload="no"></div>
       </div>
     </ons-popover>
-    <ons-popover direction="up" id="tools_popover">
-      <div style="padding: 10px; text-align: center;">
-        <p>
-          <ons-button onclick="hidePopover('tools_popover');showPopover(document.getElementById('tools_bt_simple'), 'vote_popover')" class="w-max invisible" id="vote_bt_simple">
-            <ons-icon icon="fa-align-left"></ons-icon>
-            Enquete
-          </ons-button>
-          <ons-button onclick="hidePopover('tools_popover');show_bbcodegen('simple_toot_TL_input')" class="w-max invisible" style="margin-top: 5px" id="bbcode_bt_simple">
-            <ons-icon icon="fa-font"></ons-icon>
-            BBCode
-          </ons-button>
-          <ons-button onclick="hidePopover('tools_popover');openDoodle('simple')" class="w-max" style="margin-top: 5px">
-            <ons-icon icon="fa-paint-brush"></ons-icon>
-            Doodle
-          </ons-button>
-          <ons-button onclick="hidePopover('tools_popover');add_emoji_simple('｜漢字《》')" class="w-max invisible" style="margin-top: 5px" id="yomigana_bt_simple">読み仮名</ons-button>
-        <p id="md_note_simple" class="invisible">*MarkDownはスワイプメニュー→新規トゥートから使用できます</p>
-        </p>
-        <p>
-          <ons-button onclick="hidePopover('tools_popover')" class="w-max">閉じる</ons-button>
-        </p>
-      </div>
-    </ons-popover>
-    <ons-popover direction="up" id="cp_popover">
-      <div style="padding: 10px; text-align: center;">
-        <p>
-          <ons-button onclick="hidePopover('cp_popover');copy(document.getElementById('simple_toot_TL_input').value)" class="w-max">全てコピー</ons-button>
-          <ons-button onclick="hidePopover('cp_popover');paste_simple()" style="margin-top: 5px" class="w-max">ペースト</ons-button>
-        </p>
-        <p>
-          <ons-button onclick="hidePopover('cp_popover')" class="w-max">閉じる</ons-button>
-        </p>
-      </div>
-    </ons-popover>
-    <ons-popover direction="up" id="cw_popover">
-      <div style="padding: 10px; text-align: center;">
-        <p>
-          <ons-input id="simple_toot_cw" modifier="underbar" placeholder="警告文を書いてください" class="w-max black_text" onkeyup="check_limit(value, 'toot_limit_simple', 'toot-button_simple', 'simple_toot_TL_input');"></ons-input>
-        </p>
-        <p>
-          <ons-button onclick="hidePopover('cw_popover')" class="w-max">閉じる</ons-button>
-        </p>
-      </div>
-    </ons-popover>
-    <ons-popover direction="up" id="image_popover">
-      <div style="padding: 10px; text-align: center;">
-        <p>
-        <div id="image_list_simple"></div>
-        </p>
-        <p>
-          <ons-button onclick="$('#post_file_simple').click()" class="w-max">画像追加</ons-button>
-        </p>
-        <p>
-          <ons-button onclick="post_nsfw(true)" style="margin-bottom: 5px" id="nsfw_bt_simple" modifier="quiet">
-            <ons-icon icon="fa-eye"></ons-icon>
-            NSFW
-          </ons-button>
-          <ons-button onclick="hidePopover('image_popover')" class="w-max">閉じる</ons-button>
-        </p>
-      </div>
-    </ons-popover>
-    <ons-popover direction="up" id="vote_popover">
-      <div style="padding: 10px; text-align: center;">
-        <p>
-        <form id="simple_vote">
-          <ons-input id="vote_new_1_simple" modifier="underbar" placeholder="項目1" class="w-max black_text"></ons-input>
-          <ons-input id="vote_new_2_simple" modifier="underbar" placeholder="項目2" class="w-max black_text"></ons-input>
-          <ons-input id="vote_new_3_simple" modifier="underbar" placeholder="項目3(任意)" class="w-max black_text"></ons-input>
-          <ons-input id="vote_new_4_simple" modifier="underbar" placeholder="項目4(任意)" class="w-max black_text"></ons-input>
-          <ons-select id="vote_new_time_simple" class="w-max black_text invisible" modifier="underbar">
-            <option value="30">30秒</option>
-            <option value="60">1分</option>
-            <option value="180">3分</option>
-            <option value="300">5分</option>
-            <option value="600">10分</option>
-            <option value="3600">1時間</option>
-            <option value="86400">1日</option>
-          </ons-select>
-        </form>
-        </p>
-        <p>
-          <ons-button onclick="hidePopover('vote_popover')" class="w-max">閉じる</ons-button>
-        </p>
-      </div>
-    </ons-popover>
-
-
     <div id="alert_list">
       <ons-modal direction="up" id="now_loading">
         <div style="text-align: center">

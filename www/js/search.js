@@ -5,7 +5,7 @@ function SearchKey() {
 function SearchLoad() {
   loadNav("olist_nav.html", null, true, true);
   var q = escapeHTML(document.getElementById("nav-search").value);
-  fetch("https://" + inst + "/api/v1/search?q=" + q, {
+  Fetch("https://" + inst + "/api/v1/search?q=" + q, {
     headers: {
       'content-type': 'application/json',
       'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -38,6 +38,13 @@ function SearchLoad() {
         "    </span>\n" +
         "    </div>\n" +
         "</div>";
+      i++;
+    }
+
+    i = 0;
+    reshtml += "<ons-list><ons-list-header>トゥート</ons-list-header></ons-list>";
+    while (json['statuses'][i]) {
+      reshtml += toot_card(json['statuses'][i], "full");
       i++;
     }
 

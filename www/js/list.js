@@ -60,6 +60,9 @@ function list_n(mode, title, more_load, mode_toot, navmode) {
                 "<ons-button style=\"width: 45%\" class='y-center' onclick='followreq(" + json[i]['id'] + ", \"reject\")'><ons-icon icon='fa-times'></ons-icon></ons-button>\n" +
                 "</div>";
             }
+          } else if (mode_toot === "domain") {
+            reshtml += "<div class=\"toot acct-small\"><div class=\"hashtag-card\"><span class=\"toot-group\"><b>" +
+              json[i] + "</b></span></div></div>\n";
           }
           i++;
         }
@@ -86,7 +89,7 @@ function list_n(mode, title, more_load, mode_toot, navmode) {
 }
 
 function followreq(id, mode) {
-  fetch("https://" + inst + "/api/v1/follow_requests/" + id + "/" + mode, {
+  Fetch("https://" + inst + "/api/v1/follow_requests/" + id + "/" + mode, {
     headers: {
       'content-type': 'application/json',
       'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -112,7 +115,7 @@ function followreq(id, mode) {
 function LoadrepStatus() {
   var i = 0, reshtml = "", repstatus = [];
   loadNav('olist_nav.html');
-  fetch("https://" + inst + "/api/v1/reports", {
+  Fetch("https://" + inst + "/api/v1/reports", {
     headers: {
       'content-type': 'application/json',
       'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -126,7 +129,16 @@ function LoadrepStatus() {
       throw new Error();
     }
   }).then(function (json) {
-    json = json.reverse();
+    json.sort(function(a,b) {
+      let t = 0,
+        a_ = parseInt(a.id),
+        b_ = parseInt(b.id);
+
+      if(a_ < b_) t = 1;
+      if(a_ > b_) t = -1;
+
+      return t;
+    });
     reshtml += "<div class=\"toot\">\n" +
       "      あなたの通報が現在処理されているのか簡易的に確認することができます。\n" +
       "    </div>\n";

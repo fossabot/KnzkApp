@@ -1,7 +1,7 @@
 function reset_alert() {
   ons.notification.confirm('本当に通知を消去してもよろしいですか？', {title: '通知を消去'}).then(function (e) {
     if (e === 1) {
-      fetch("https://" + inst + "/api/v1/notifications/clear", {
+      Fetch("https://" + inst + "/api/v1/notifications/clear", {
         headers: {
           'content-type': 'application/json',
           'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -37,7 +37,7 @@ function showAlert(reload, more_load) {
     more_load.disabled = true;
     get = "?max_id=" + alert_old_id;
   }
-  fetch("https://" + inst + "/api/v1/notifications" + get, {
+  Fetch("https://" + inst + "/api/v1/notifications" + get, {
     headers: {
       'content-type': 'application/json',
       'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -55,6 +55,7 @@ function showAlert(reload, more_load) {
     }
   }).then(function (json) {
     if (json[i]) {
+      resetLabel();
       displayTime('update');
       if (more_load) {
         reshtml = document.getElementById("alert_main").innerHTML;
@@ -62,24 +63,26 @@ function showAlert(reload, more_load) {
       while (json[i]) {
         alert_new_id = json[0]['id'];
         if (!json[i]['account']['display_name']) json[i]['account']['display_name'] = json[i]['account']['username'];
-
+        var filter = getConfig(5, (json[i]['account']['acct'].indexOf("@") === -1 ? json[i]['account']['acct'] + "@" + inst : json[i]['account']['acct']).toLowerCase());
         if (json[i]['type'] === "follow") {
-          alert_text = "<div class='alert_text'>";
-          alert_text += "<ons-icon icon=\"fa-user-plus\" class='boost-active'></ons-icon> <b onclick='show_account(" + json[i]['account']['id'] + ")'>" + escapeHTML(json[i]['account']['display_name']) + "</b>さんにフォローされました";
-          alert_text += "</div>";
-          reshtml += "<div class=\"toot\">\n" +
-            alert_text +
-            "                    <div class=\"row\">\n" +
-            "                        <div class=\"col-xs-2\">\n" +
-            "                            <p><img src=\"" + json[i]['account']['avatar'] + "\" class=\"icon-img\" onclick='show_account(" + json[i]['account']['id'] + ")'/></p>\n" +
-            "                        </div>\n" +
-            "                        <div class=\"col-xs-9 toot-card-right\">\n" +
-            "                            <div class=\"toot-group\">\n" +
-            "                                <span onclick='show_account(" + json[i]['account']['id'] + ")'><b>" + escapeHTML(json[i]['account']['display_name']) + "</b> <small>@" + json[i]['account']['acct'] + "</small></span>\n" +
-            "                            </div>\n" +
-            "                        </div>\n" +
-            "                    </div>\n" +
-            "            </div>";
+          if (!filter["follow"]) {
+            alert_text = "<div class='alert_text'>";
+            alert_text += "<ons-icon icon=\"fa-user-plus\" class='boost-active'></ons-icon> <b onclick='show_account(" + json[i]['account']['id'] + ")'>" + escapeHTML(json[i]['account']['display_name']) + "</b>さんにフォローされました (<span data-time='" + json[i]['created_at'] + "' class='date'>" + displayTime('new', json[i]['created_at']) + "</span>)";
+            alert_text += "</div>";
+            reshtml += "<div class=\"toot\">\n" +
+              alert_text +
+              "                    <div class='toot_flex'>\n" +
+              "                        <div width='50px'>\n" +
+              "                            <p><img src=\"" + json[i]['account']['avatar'] + "\" class=\"icon-img\" onclick='show_account(" + json[i]['account']['id'] + ")'/></p>\n" +
+              "                        </div>\n" +
+              "                        <div class=\"toot-card-right\">\n" +
+              "                            <div class=\"toot-group\">\n" +
+              "                                <span onclick='show_account(" + json[i]['account']['id'] + ")'><b>" + escapeHTML(json[i]['account']['display_name']) + "</b> <small>@" + json[i]['account']['acct'] + "</small></span>\n" +
+              "                            </div>\n" +
+              "                        </div>\n" +
+              "                    </div>\n" +
+              "            </div>";
+          }
         } else {
           if (json[i]["type"] === "favourite") {
             alert_text = "<ons-icon icon=\"fa-star\" class='fav-active'></ons-icon> <b onclick='show_account(" + json[i]['account']['id'] + ")'>" + escapeHTML(json[i]['account']['display_name']) + "</b>さんがお気に入りしました (<span data-time='" + json[i]['created_at'] + "' class='date'>" + displayTime('new', json[i]['created_at']) + "</span>)";
@@ -87,8 +90,9 @@ function showAlert(reload, more_load) {
           if (json[i]["type"] === "reblog") {
             alert_text = "<ons-icon icon=\"fa-retweet\" class='boost-active'></ons-icon> <b onclick='show_account(" + json[i]['account']['id'] + ")'>" + escapeHTML(json[i]['account']['display_name']) + "</b>さんがブーストしました (<span data-time='" + json[i]['created_at'] + "' class='date'>" + displayTime('new', json[i]['created_at']) + "</span>)";
           }
-
-          reshtml += toot_card(json[i]['status'], "full", alert_text, null, "alert");
+          if (!((json[i]["type"] === "favourite" && filter["fav"]) || (json[i]["type"] === "reblog" && filter["boost"]) || (json[i]["type"] === "mention" && filter["mention"]))) {
+            reshtml += toot_card(json[i]['status'], "full", alert_text, null, "alert");
+          }
         }
         alert_text = "";
         i++;
@@ -147,6 +151,7 @@ function openTL(mode) {
         $("#dial_TL").removeClass("invisible");
         setsd();
       }
+      if (getConfig(1, 'swipe_menu') == 1) document.getElementById("tl_tabs").setAttribute("swipeable", "1");
     }, 200);
   }
 }
@@ -211,7 +216,7 @@ function showTL(mode, reload, more_load, clear_load) {
   }
   if (more_load) more_load.className = "invisible";
   if (n) {
-    fetch("https://" + inst + "/api/v1/timelines/" + tlmode, {
+    Fetch("https://" + inst + "/api/v1/timelines/" + tlmode, {
       headers: {
         'content-type': 'application/json',
         'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -370,7 +375,7 @@ function showTagTL(tag, more_load) {
   } else {
     loadNav('showtag.html');
   }
-  fetch("https://" + inst + "/api/v1/timelines/tag/" + tag + get, {
+  Fetch("https://" + inst + "/api/v1/timelines/tag/" + tag + get, {
     headers: {
       'content-type': 'application/json',
       'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -428,7 +433,7 @@ function showAccountTL(id, more_load, mode = "", reload) {
     document.getElementById("account_toot").innerHTML = "<div class=\"loading-now\"><ons-progress-circular indeterminate></ons-progress-circular></div>";
   }
 
-  fetch("https://" + inst + "/api/v1/accounts/" + id + "/statuses" + get, {
+  Fetch("https://" + inst + "/api/v1/accounts/" + id + "/statuses" + get, {
     headers: {
       'content-type': 'application/json',
       'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')

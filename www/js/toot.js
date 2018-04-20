@@ -1,18 +1,22 @@
 function toot_card(toot, mode, note, toot_light, page) {
   var buf = "", piccard = "", fav = "", boost = "", namucard = "", namubt = "", p = 0, alert_text = "", content = "",
-    button = "", e = 0, bt_big = "", light = "", q = 0, enq_item = "";
+    button = "", bt_big = "", light = "", q = 0, enq_item = "";
   var appname, boost_full, boost_big, visibility_icon, can_col, is_col = "", col_bt = "", col_pic = "", col_bg_st = "",
-    col_bg_cl = "", button_col = "", icon_html = "", layout_num = {}, name = "";
+    col_bg_cl = "", button_col = "", icon_html = "", name = "", no_icon_class = "";
   if (!toot) {
     return "";
   }
   if (toot['reblog']) {
     if (!toot['account']['display_name'])
       toot['account']['display_name'] = toot['account']['username'];
-    alert_text = "<p class='alert_text'><ons-icon icon=\"fa-retweet\" class='boost-active'></ons-icon> <b onclick='show_account(" + toot['account']['id'] + ")'>" + escapeHTML(toot['account']['display_name']) + "</b>さんがブーストしました (<span data-time='" + toot['created_at'] + "' class='date'>" + displayTime('new', toot['created_at']) + "</span>)</p>";
+    alert_text = "<p class='alert_text'><ons-icon icon=\"fa-retweet\" class='boost-active'></ons-icon> <b onclick='show_account(" + toot['account']['id'] + ")'>" + escapeHTML(toot['account']['display_name']) + "</b>さんがブースト (<span data-time='" + toot['created_at'] + "' class='date'>" + displayTime('new', toot['created_at']) + "</span>)</p>";
     toot = toot['reblog'];
   }
   tl_postdata[toot["id"]] = toot;
+  var filter = getConfig(5, (toot['account']['acct'].indexOf("@") === -1 ? toot['account']['acct'] + "@" + inst : toot['account']['acct']).toLowerCase());
+  if (filter["all"] || filter["toot"]) {
+    return "";
+  }
 
   if (!toot['account']['display_name'])
     toot['account']['display_name'] = toot['account']['username'];
@@ -91,10 +95,10 @@ function toot_card(toot, mode, note, toot_light, page) {
     }
   }
   if (can_col && is_col) {
-    col_bt = "<button class='no-rd p0 button button--quiet' onclick='toot_col(\"" + toot['id'] + "\")'><i class='fa fa-fw fa-angle-double-down toot-right-icon blue toot_col_" + toot['id'] + "'></i></button>";
+    col_bt = "<button class='no-rd p0 button button--quiet' onclick='toot_col(\"" + toot['id'] + "\")' style='margin-left: 10px'><i class='fa fa-fw fa-angle-double-down toot-right-icon blue toot_col_" + toot['id'] + "'></i></button>";
     button_col = "disable ";
   } else if (can_col) {
-    col_bt = "<button class='no-rd p0 button button--quiet' onclick='toot_col(\"" + toot['id'] + "\")'><i class='fa fa-fw fa-angle-double-up toot-right-icon toot_col_" + toot['id'] + "'></i></button>";
+    col_bt = "<button class='no-rd p0 button button--quiet' onclick='toot_col(\"" + toot['id'] + "\")' style='margin-left: 10px'><i class='fa fa-fw fa-angle-double-up toot-right-icon toot_col_" + toot['id'] + "'></i></button>";
   }
   if (toot['visibility'] === "direct") {
     visibility_icon = "envelope";
@@ -149,13 +153,13 @@ function toot_card(toot, mode, note, toot_light, page) {
     content = toot['content'] + piccard;
   }
   if (mode == "full") {
-    button = "                            <div class=\"" + button_col + "toot-group tb_group_" + toot["id"] + "\">" +
-      "                                <ons-icon icon=\"fa-reply\" onclick=\"reply('" + toot['id'] + "', '" + toot["visibility"] + "')\" class=\"toot-button\"></ons-icon>" +
+    button = "<div class=\"" + button_col + "toot-group tb_group_" + toot["id"] + "\">" +
+      "<ons-icon icon=\"fa-reply\" onclick=\"reply('" + toot['id'] + "', '" + toot["visibility"] + "')\" class=\"toot-button\"></ons-icon>" +
       boost_full +
-      "                                <ons-icon icon=\"fa-star\" onclick=\"toot_action('" + toot['id'] + "', null, 'fav')\" class=\"tootfav_" + toot['id'] + " toot-button" + namubt + fav + "\"></ons-icon>" +
-      "                                <ons-icon icon=\"fa-ellipsis-h\" onclick=\"more('" + toot['id'] + "')\" class=\"toot-button toot-button-last\"></ons-icon>" +
-      "                                 <span class='toot-right date date-disp' data-time='" + toot['created_at'] + "' onclick='show_post(\"" + toot['id'] + "\")'>" + date + "</span>" +
-      "                            </div>\n";
+      "<ons-icon icon=\"fa-star\" onclick=\"toot_action('" + toot['id'] + "', null, 'fav')\" class=\"tootfav_" + toot['id'] + " toot-button" + namubt + fav + "\"></ons-icon>" +
+      "<ons-icon icon=\"fa-ellipsis-h\" onclick=\"more('" + toot['id'] + "')\" class=\"toot-button toot-button-last\"></ons-icon>" +
+      "<div class='toot-right date date-disp' data-time='" + toot['created_at'] + "' onclick='show_post(\"" + toot['id'] + "\")'>" + date + "</div>" +
+      "</div>\n";
   }
 
   if (mode == "big") {
@@ -171,31 +175,30 @@ function toot_card(toot, mode, note, toot_light, page) {
     });
     bt_big = "<span class='big_date'>" + appname + date_text + " · <span onclick='list(\"statuses/" + toot['id'] + "/reblogged_by\", \"ブーストしたユーザー\", null, \"acct\", true)'><ons-icon icon=\"fa-retweet\"></ons-icon> " + toot['reblogs_count'] + "</span> · <span onclick='list(\"statuses/" + toot['id'] + "/favourited_by\", \"お気に入りしたユーザー\", null, \"acct\", true)'><ons-icon icon=\"fa-star\"></ons-icon> " + toot['favourites_count'] + "</span></span>" +
       "<div class=\"row toot_big_border\">\n" +
-      "                    <div class=\"col-xs-3 showtoot-button\"><ons-icon icon=\"fa-reply\" onclick=\"reply('" + toot['id'] + "', '" + toot["visibility"] + "')\" class=\"showtoot-button\"></ons-icon></div>\n" +
-      "                    <div class=\"col-xs-3 showtoot-button\">" + boost_big + "</div>\n" +
-      "                    <div class=\"col-xs-3 showtoot-button\"><ons-icon icon=\"fa-star\" onclick=\"toot_action('" + toot['id'] + "', 'big', 'fav')\" class=\"tootfav_" + toot['id'] + " showtoot-button" + fav + "\"></ons-icon></div>\n" +
-      "                    <div class=\"col-xs-3 showtoot-button\"><ons-icon icon=\"fa-ellipsis-h\" onclick=\"more('" + toot['id'] + "')\" class=\"showtoot-button\"></ons-icon></div>\n" +
-      "                </div>";
+      "<div class=\"col-xs-3 showtoot-button\"><ons-icon icon=\"fa-reply\" onclick=\"reply('" + toot['id'] + "', '" + toot["visibility"] + "')\" class=\"showtoot-button\"></ons-icon></div>\n" +
+      "<div class=\"col-xs-3 showtoot-button\">" + boost_big + "</div>\n" +
+      "<div class=\"col-xs-3 showtoot-button\"><ons-icon icon=\"fa-star\" onclick=\"toot_action('" + toot['id'] + "', 'big', 'fav')\" class=\"tootfav_" + toot['id'] + " showtoot-button" + fav + "\"></ons-icon></div>\n" +
+      "<div class=\"col-xs-3 showtoot-button\"><ons-icon icon=\"fa-ellipsis-h\" onclick=\"more('" + toot['id'] + "')\" class=\"showtoot-button\"></ons-icon></div>\n" +
+      "</div>";
   }
 
-  if (page === "alert" && note && getConfig(2, 'alert_m')) {
-    layout_num["toot_content"] = "11 no-icon-mode";
-  } else {
+  if (!(page === "alert" && note && getConfig(2, 'alert_m'))) {
     icon_html = "<div width='50px'>\n" +
       "<p><img src=\"" + toot['account'][getConfig(1, 'no_gif') ? "avatar_static" : "avatar"] + "\" class=\"icon-img\" onclick='show_account(" + toot['account']['id'] + ")'/></p>\n" +
       "</div>\n";
-    layout_num["toot_content"] = 9;
-  }
-
-  col_bt = "<div class='rightup-button'><button class='no-rd p0 button button--quiet' disabled><ons-icon icon='fa-" + visibility_icon + "' class='toot-right-icon' style='margin-right: 10px'></ons-icon></button>" + col_bt + "</div>";
-
-  if (page === "alert" && note && getConfig(2, 'alert_m')) {
-    note += col_bt;
   } else {
-    name = "<div onclick='show_account(" + toot['account']['id'] + ")' class='toot_name'><b class='toot_name'>" + t_text(escapeHTML(toot['account']['display_name'])) + "</b> <small>@" + toot['account']['acct'] + "</small></div>" + col_bt;
+    no_icon_class = "no_icon ";
   }
+
+  col_bt = "<div class='rightup-button'><button class='no-rd p0 button button--quiet' disabled><ons-icon icon='fa-" + visibility_icon + "' class='toot-right-icon'></ons-icon></button>" + col_bt + "</div>";
 
   if (note) alert_text = "<div class='alert_text'>" + note + "</div>";
+  alert_text += col_bt;
+
+  if (!(page === "alert" && note && getConfig(2, 'alert_m'))) {
+    name = "<div onclick='show_account(" + toot['account']['id'] + ")' class='toot_name'><b>" + t_text(escapeHTML(toot['account']['display_name'])) + "</b> <small>@" + toot['account']['acct'] + "</small></div>";
+  }
+
   content = t_text(content, toot['emojis']);
 
   buf += "<div class=\"" + col_bg_cl + "toot" + light + " post_" + toot['id'] + "\" id='post_" + toot['id'] + "' data-bgpic='" + col_pic + "' style='" + col_bg_st + "'>\n" +
@@ -203,8 +206,8 @@ function toot_card(toot, mode, note, toot_light, page) {
     "<div class='toot_flex'>" + icon_html +
     "<div class=\"toot-card-right\">" +
     "<div class='" + namucard + "'>" +
-    "<div class=\"toot-group\">" + name + "</div>" +
-    "<div class='" + is_col + "toot_content tootcontent_" + toot['id'] + "' data-id='" + toot['id'] + "' data-dispmode='" + mode + "'>" + content + "</div>" +
+    "<div class=\"toot-group name_box\">" + name + "</div>" +
+    "<div class='" + is_col + no_icon_class + "toot_content tootcontent_" + toot['id'] + "' data-id='" + toot['id'] + "' data-dispmode='" + mode + "'>" + content + "</div>" +
     "</div>" + button + "</div>" + "</div>" + bt_big + "</div>\n";
 
   return buf;
@@ -237,7 +240,7 @@ function toot_col(id) {
 }
 
 function vote_item(q, obj, id) {
-  fetch("https://" + inst + "/api/v1/votes/" + id, {
+  Fetch("https://" + inst + "/api/v1/votes/" + id, {
     headers: {
       'content-type': 'application/json',
       'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -292,7 +295,7 @@ function toot_action(id, mode, action_mode) {
       i++;
     }
   }
-  fetch("https://" + inst + "/api/v1/statuses/" + id + url, {
+  Fetch("https://" + inst + "/api/v1/statuses/" + id + url, {
     headers: {
       'content-type': 'application/json',
       'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -388,7 +391,7 @@ function visibility_name(mode) {
 
 function pin_set(id) {
   var pin_mode = tl_postdata[id]["pinned"] ? "/unpin" : "/pin";
-  fetch("https://" + inst + "/api/v1/statuses/" + id + pin_mode, {
+  Fetch("https://" + inst + "/api/v1/statuses/" + id + pin_mode, {
     headers: {
       'content-type': 'application/json',
       'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -480,7 +483,7 @@ function more(id) {
 function delete_post() {
   ons.notification.confirm('本当に削除しますか？', {title: 'トゥートを削除'}).then(function (e) {
     if (e === 1) {
-      fetch("https://" + inst + "/api/v1/statuses/" + more_status_id, {
+      Fetch("https://" + inst + "/api/v1/statuses/" + more_status_id, {
         headers: {
           'content-type': 'application/json',
           'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -516,7 +519,7 @@ function delete_post() {
 function show_post(id, near) {
   var reshtml = "", d = 0, i = 0;
   loadNav('showtoot.html');
-  fetch("https://" + inst + "//api/v1/statuses/" + id, {
+  Fetch("https://" + inst + "//api/v1/statuses/" + id, {
     headers: {
       'content-type': 'application/json',
       'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -534,7 +537,7 @@ function show_post(id, near) {
       if (near) {
         i = 0;
         reshtml += toot_card(json_stat, "big", null, "gold");
-        fetch("https://" + inst + "/api/v1/timelines/public?local=true&limit=10&max_id=" + id, {
+        Fetch("https://" + inst + "/api/v1/timelines/public?local=true&limit=10&max_id=" + id, {
           headers: {
             'content-type': 'application/json',
             'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -558,7 +561,7 @@ function show_post(id, near) {
           }
         });
       } else {
-        fetch("https://" + inst + "//api/v1/statuses/" + id + "/context", {
+        Fetch("https://" + inst + "//api/v1/statuses/" + id + "/context", {
           headers: {
             'content-type': 'application/json',
             'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -595,7 +598,7 @@ function show_post(id, near) {
 function report() {
   var rep = ons.notification.prompt('通報のコメントを記入してください<br>(空欄でキャンセル)', {title: '通報'}).then(function (repcom) {
     if (repcom) {
-      fetch("https://" + inst + "/api/v1/reports", {
+      Fetch("https://" + inst + "/api/v1/reports", {
         headers: {
           'content-type': 'application/json',
           'Authorization': 'Bearer ' + localStorage.getItem('knzkapp_now_mastodon_token')
@@ -630,7 +633,7 @@ function report() {
 
 function original_post(id, url, acct) {
   show("now_loading");
-  fetch(url, {
+  Fetch(url, {
     method: 'GET'
   }).then(function (response) {
     if (response.ok) {
