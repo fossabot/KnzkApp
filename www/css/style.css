@@ -762,3 +762,8 @@ img.emoji {
 .near_federated {
   pointer-events: none;
 }
+
+#tlconf-list ons-radio[disabled],
+#tlconf-list :disabled + .radio-button__checkmark {
+  opacity: initial;
+}

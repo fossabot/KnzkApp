@@ -278,6 +278,7 @@ function showTL(mode, reload, more_load, clear_load) {
       console.error(e);
     }
   }
+  if (!mode) return;
   if (mode === 'home') {
     if (more_load) tlmode = 'home?max_id=' + toot_old_id;
     else tlmode = 'home?since_id=' + toot_new_id;
@@ -297,6 +298,16 @@ function showTL(mode, reload, more_load, clear_load) {
   } else if (mode === 'public_media') {
     if (more_load) tlmode = 'public?max_id=' + toot_old_id;
     else tlmode = 'public?limit=40&since_id=' + toot_new_id;
+    n = true;
+  } else if (mode.match(/hashtag:/i)) {
+    var tag = mode.replace('hashtag:', '');
+    if (more_load) tlmode = 'tag/' + tag + '?max_id=' + toot_old_id;
+    else tlmode = 'tag/' + tag + '?since_id=' + toot_new_id;
+    n = true;
+  } else if (mode.match(/list:/i)) {
+    var list = mode.replace('list:', '');
+    if (more_load) tlmode = 'list/' + list + '?max_id=' + toot_old_id;
+    else tlmode = 'list/' + list + '?since_id=' + toot_new_id;
     n = true;
   }
   if (more_load) more_load.className = 'invisible';
@@ -333,7 +344,11 @@ function showTL(mode, reload, more_load, clear_load) {
                 ws_mode = 'public';
               else if (mode === 'local' || mode === 'local_media')
                 ws_mode = 'public:local';
-              else ws_mode = 'user';
+              else if (mode === 'home') ws_mode = 'user';
+              else if (mode.match(/hashtag:/i))
+                ws_mode = 'hashtag&tag=' + mode.replace('hashtag:', '');
+              else if (mode.match(/list:/i))
+                ws_mode = 'list&list=' + mode.replace('list:', '');
 
               if (!reload && !more_load) {
                 var instance_ws = inst,
@@ -718,16 +733,31 @@ function setTLheadcolor(mode) {
   }
 }
 
+function TLident(mode) {
+  var name,
+    locale = {
+      home: 'home',
+      local: 'local',
+      public: 'federated',
+      local_media: 'local_media',
+      public_media: 'federated_media',
+      plus_local: '+ローカル',
+    };
+
+  if (!mode) return;
+  if (locale[mode]) name = locale[mode];
+  else if (mode.match(/hashtag:/i)) name = 'hashtag';
+  else if (mode.match(/list:/i)) name = 'list';
+
+  return name;
+}
+
 function TLname(mode) {
-  var locale = {
-    home: 'home',
-    local: 'local',
-    public: 'federated',
-    local_media: 'local_media',
-    public_media: 'federated_media',
-    plus_local: '+ローカル',
-  };
-  return i18next.t('timeline.' + locale[mode]);
+  var n = TLident(mode),
+    text;
+  if (n === 'hashtag' || name === 'list') text = mode;
+  else text = i18next.t('timeline.' + n);
+  return text;
 }
 
 function initph(mode) {
@@ -817,25 +847,32 @@ function initTLConf() {
     if (timeline_default_tab === i) {
       ch = 'checked';
     }
+    var TL_ident = TLident(timeline_config[i]),
+      name;
+    if (TL_ident === 'hashtag' || TL_ident === 'list') {
+      name = timeline_config[i];
+    } else {
+      name = TLname(timeline_config[i]);
+    }
 
     reshtml +=
       '<ons-list-item class="list-item">\n' +
-      '<label class="left list-item__left" onclick=\'editTLConfD(' +
-      i +
-      ')\'><ons-radio name="tl_default" input-id="tl_default-' +
+      '<label class="left list-item__left"><ons-radio disabled name="tl_default" input-id="tl_default-' +
       i +
       '" ' +
       ch +
       ' class="radio-button">\n' +
       '<input type="radio" class="radio-button__input" id="tl_default-' +
       i +
-      '" name="tl_default">\n' +
+      '" name="tl_default" disabled>\n' +
       '<span class="radio-button__checkmark"></span>\n' +
       '</ons-radio></label>\n' +
       '<label for="tl_default-' +
       i +
-      '" class="center list-item__center">' +
-      TLname(timeline_config[i]) +
+      '" class="center list-item__center" onclick="editTLConfigOption(' +
+      i +
+      ')">' +
+      name +
       '</label>\n' +
       '<label class="right list-item__right">\n' +
       up +
@@ -844,6 +881,31 @@ function initTLConf() {
     i++;
   }
   document.getElementById('tlconf-list').innerHTML = reshtml;
+}
+
+function editTLdel(i) {
+  if (timeline_config.length < 2 || timeline_default_tab === i) {
+    return;
+  }
+  if (timeline_default_tab > i) {
+    timeline_default_tab--;
+    localStorage.setItem(
+      'knzkapp_conf_mastodon_timeline',
+      JSON.stringify({
+        config: timeline_config,
+        default: timeline_default_tab,
+      })
+    );
+  }
+  timeline_config.splice(i, 1);
+  localStorage.setItem(
+    'knzkapp_conf_mastodon_timeline',
+    JSON.stringify({
+      config: timeline_config,
+      default: timeline_default_tab,
+    })
+  );
+  initTLConf();
 }
 
 function editTLConf(i, mode) {
@@ -879,6 +941,18 @@ function editTLConfD(i) {
       default: timeline_default_tab,
     })
   );
+  initTLConf();
+}
+
+function editTLConfAdd(name) {
+  timeline_config.push(name);
+  localStorage.setItem(
+    'knzkapp_conf_mastodon_timeline',
+    JSON.stringify({
+      config: timeline_config,
+      default: timeline_default_tab,
+    })
+  );
 }
 
 function setsd() {
@@ -886,14 +960,16 @@ function setsd() {
     icons = {
       home: 'ons-icon fa fa-home',
       local: 'ons-icon fa fa-users',
-      public: 'ons-icon fa fa-globe',
+      federated: 'ons-icon fa fa-globe',
       local_media: 'ons-icon fa fa-picture-o',
-      public_media: 'ons-icon zmdi zmdi-collection-image-o',
+      federated_media: 'ons-icon zmdi zmdi-collection-image-o',
+      hashtag: 'ons-icon fa fa-hashtag',
+      list: 'ons-icon fa fa-bars',
       plus_local: '+ローカル',
     };
   while (i <= 4) {
     document.getElementById('sd_icon' + i).className =
-      icons[timeline_config[i]];
+      icons[TLident(timeline_config[i])];
     i++;
   }
 }
@@ -910,4 +986,79 @@ function closeAllws() {
   } catch (e) {
     console.warn('TL切断失敗:', e);
   }
+}
+
+function AddTLConfig() {
+  var buttons = [
+      i18next.t('actionsheet.editTL.hashtag'),
+      i18next.t('actionsheet.editTL.list'),
+    ],
+    defaultTL = ['home', 'local', 'public', 'local_media', 'public_media'],
+    defaultTLdisable = [null, null],
+    i = 0;
+  while (defaultTL[i]) {
+    if (timeline_config.indexOf(defaultTL[i]) === -1) {
+      buttons.push(TLname(defaultTL[i]));
+      defaultTLdisable.push(defaultTL[i]);
+    }
+    i++;
+  }
+  buttons.push({
+    label: i18next.t('navigation.cancel'),
+    icon: 'md-close',
+  });
+
+  ons
+    .openActionSheet({
+      title: i18next.t('actionsheet.editTL.title'),
+      cancelable: true,
+      buttons: buttons,
+    })
+    .then(function(index) {
+      if (index === 0) addHashtag();
+      else if (index === 1)
+        ons.notification.alert(dialog_i18n('list_note', 1), {
+          title: dialog_i18n('list_note'),
+        });
+      else {
+        if (defaultTLdisable[index]) {
+          editTLConfAdd(defaultTLdisable[index]);
+          initTLConf();
+        }
+      }
+    });
+}
+
+function editTLConfigOption(id) {
+  var buttons = [i18next.t('actionsheet.editTL.option.default')];
+
+  if (timeline_config.length > 1 && timeline_default_tab !== id) {
+    buttons.push(i18next.t('actionsheet.editTL.option.delete'));
+  }
+
+  buttons.push({
+    label: i18next.t('navigation.cancel'),
+    icon: 'md-close',
+  });
+
+  ons
+    .openActionSheet({
+      cancelable: true,
+      buttons: buttons,
+    })
+    .then(function(index) {
+      if (index === 0) editTLConfD(id);
+      else if (index === 1) editTLdel(id);
+    });
+}
+
+function addHashtag() {
+  ons.notification
+    .prompt(dialog_i18n('hashtag', 1), { title: dialog_i18n('hashtag') })
+    .then(function(repcom) {
+      if (repcom) {
+        editTLConfAdd('hashtag:' + escapeHTML(repcom));
+        initTLConf();
+      }
+    });
 }
