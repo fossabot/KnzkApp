@@ -115,7 +115,7 @@
   </head>
   <body>
     <ons-splitter>
-      <ons-splitter-side id="splitter-menu" side="left" width="280px" collapse animation="reveal">
+      <ons-splitter-side id="splitter-menu" side="left" width="250px" collapse animation="reveal">
         <ons-page>
           <ons-list>
             <ons-list-item class="splitter-profile-item" id="splitter-profile-bg">
@@ -438,11 +438,16 @@
         </ons-toolbar>
         <ons-gesture-detector>
           <ons-tabbar hide-tabs id="tl_tabs">
-            <ons-tab page="tl-0.html" active></ons-tab>
+            <ons-tab page="tl-0.html"></ons-tab>
             <ons-tab page="tl-1.html"></ons-tab>
             <ons-tab page="tl-2.html"></ons-tab>
             <ons-tab page="tl-3.html"></ons-tab>
             <ons-tab page="tl-4.html"></ons-tab>
+            <ons-tab page="tl-5.html"></ons-tab>
+            <ons-tab page="tl-6.html"></ons-tab>
+            <ons-tab page="tl-7.html"></ons-tab>
+            <ons-tab page="tl-8.html"></ons-tab>
+            <ons-tab page="tl-9.html"></ons-tab>
           </ons-tabbar>
         </ons-gesture-detector>
         <ons-speed-dial position="bottom right" direction="up" onclick="opendial()" id="dial_main" class="invisible">
@@ -450,28 +455,10 @@
             <ons-icon icon="fa-bell" id="dial-icon"></ons-icon>
           </ons-fab>
         </ons-speed-dial>
-        <ons-speed-dial position="bottom right" direction="up" id="dial_TL" class="invisible">
+        <ons-speed-dial position="bottom right" direction="up" id="dial_TL" class="invisible" onclick="$('#TLChangeTab').show()">
           <ons-fab>
             <ons-icon icon="fa-home"></ons-icon>
           </ons-fab>
-          <ons-speed-dial-item onclick="openTL('alert_nav')">
-            <ons-icon icon="fa-bell"></ons-icon>
-          </ons-speed-dial-item>
-          <ons-speed-dial-item onclick="TL_change(0)">
-            <ons-icon icon="fa-home" id="sd_icon0"></ons-icon>
-          </ons-speed-dial-item>
-          <ons-speed-dial-item onclick="TL_change(1)">
-            <ons-icon icon="fa-users" id="sd_icon1"></ons-icon>
-          </ons-speed-dial-item>
-          <ons-speed-dial-item onclick="TL_change(2)">
-            <ons-icon icon="fa-globe" id="sd_icon2"></ons-icon>
-          </ons-speed-dial-item>
-          <ons-speed-dial-item onclick="TL_change(3)">
-            <ons-icon icon="fa-picture-o" id="sd_icon3"></ons-icon>
-          </ons-speed-dial-item>
-          <ons-speed-dial-item onclick="TL_change(4)">
-            <ons-icon icon="md-collection-image-o" id="sd_icon4"></ons-icon>
-          </ons-speed-dial-item>
         </ons-speed-dial>
         <ons-bottom-toolbar id="simple_toot_TL_toolbar">
           <form id="simple_toot_form">
@@ -614,41 +601,18 @@
         </ons-popover>
       </ons-page>
     </ons-template>
-    <ons-template id="tl-0.html">
-      <ons-page id="TL0_main" class="timeline">
-        <div class="loading-now">
-          <ons-progress-circular indeterminate></ons-progress-circular>
-        </div>
-      </ons-page>
-    </ons-template>
-    <ons-template id="tl-1.html">
-      <ons-page id="TL1_main" class="timeline">
-        <div class="loading-now">
-          <ons-progress-circular indeterminate></ons-progress-circular>
-        </div>
-      </ons-page>
-    </ons-template>
-    <ons-template id="tl-2.html">
-      <ons-page id="TL2_main" class="timeline">
-        <div class="loading-now">
-          <ons-progress-circular indeterminate></ons-progress-circular>
-        </div>
-      </ons-page>
-    </ons-template>
-    <ons-template id="tl-3.html">
-      <ons-page id="TL3_main" class="timeline">
-        <div class="loading-now">
-          <ons-progress-circular indeterminate></ons-progress-circular>
-        </div>
-      </ons-page>
-    </ons-template>
-    <ons-template id="tl-4.html">
-      <ons-page id="TL4_main" class="timeline">
-        <div class="loading-now">
-          <ons-progress-circular indeterminate></ons-progress-circular>
-        </div>
-      </ons-page>
-    </ons-template>
+
+    <ons-template id="tl-0.html"><ons-page id="TL0_main" class="timeline"></ons-page></ons-template>
+    <ons-template id="tl-1.html"><ons-page id="TL1_main" class="timeline"></ons-page></ons-template>
+    <ons-template id="tl-2.html"><ons-page id="TL2_main" class="timeline"></ons-page></ons-template>
+    <ons-template id="tl-3.html"><ons-page id="TL3_main" class="timeline"></ons-page></ons-template>
+    <ons-template id="tl-4.html"><ons-page id="TL4_main" class="timeline"></ons-page></ons-template>
+    <ons-template id="tl-5.html"><ons-page id="TL5_main" class="timeline"></ons-page></ons-template>
+    <ons-template id="tl-6.html"><ons-page id="TL6_main" class="timeline"></ons-page></ons-template>
+    <ons-template id="tl-7.html"><ons-page id="TL7_main" class="timeline"></ons-page></ons-template>
+    <ons-template id="tl-8.html"><ons-page id="TL8_main" class="timeline"></ons-page></ons-template>
+    <ons-template id="tl-9.html"><ons-page id="TL9_main" class="timeline"></ons-page></ons-template>
+
     <ons-template id="alert.html">
       <ons-page>
         <ons-toolbar>
@@ -2190,6 +2154,10 @@
           </p>
         </div>
       </ons-modal>
+      <ons-toast id="TLChangeTab">
+        <div id="TLChangeList">
+        </div>
+      </ons-toast>
       <ons-toast id="del-post-ok">
         <span data-i18n="dialogs_html.del_post">トゥートを削除しました。</span>
       </ons-toast>

@@ -177,6 +177,10 @@
     "list_note": {
       "title": "リストTLを追加",
       "text": "リストTLの追加は<a href=\"#\" onclick=\"$('ons-alert-dialog-button').click();loadNav('lists.html')\"><b>ユーザーメニュー > リスト</b></a>より行なえます。"
+    },
+    "err_new_tl": {
+      "title": "エラー",
+      "text": "これ以上タイムラインを増やすことはできません。"
     }
   },
   "search": {

@@ -284,6 +284,10 @@
     "list_note": {
       "title": "Add list timeline",
       "text": "リストTLの追加は<a href=\"#\" onclick=\"$('ons-alert-dialog-button').click();loadNav('lists.html')\"><b>ユーザーメニュー > リスト</b></a>より行なえます。"
+    },
+    "err_new_tl": {
+      "title": "Error",
+      "text": "これ以上タイムラインを増やすことはできません。"
     }
   },
   "search": {

@@ -103,14 +103,7 @@ function init() {
 
                 setTimeout(function() {
                   startWatching();
-                  TL_change(timeline_default_tab);
-                  now_TL = timeline_config[timeline_default_tab];
-                  timeline_now_tab = timeline_default_tab;
-                  document.getElementById('home_title').innerHTML = TLname(
-                    timeline_config[timeline_now_tab]
-                  );
-                  showTL(null, null, null, true, null);
-
+                  initTimeline();
                   if (getConfig(1, 'tutorial') !== 1) {
                     loadNav('tutorial.html', 'up');
                     setConfig(1, 'tutorial', 1);
@@ -150,20 +143,6 @@ function init() {
                     document
                       .getElementById('tl_tabs')
                       .setAttribute('swipeable', '1');
-                  }
-
-                  var dial = getConfig(1, 'dial'),
-                    icon;
-                  if (dial && dial != 'change') {
-                    $('#dial_main').removeClass('invisible');
-                    if (dial === 'toot') icon = 'fa-pencil';
-                    else if (dial === 'alert') icon = 'fa-bell';
-                    if (dial === 'reload') icon = 'fa-refresh';
-                    document.getElementById('dial-icon').className =
-                      'ons-icon fa ' + icon;
-                  } else if (dial) {
-                    $('#dial_TL').removeClass('invisible');
-                    setsd();
                   }
                   migration_app2glitch();
                 }, 500);
@@ -464,6 +443,7 @@ function initevent() {
   $(document).on('click', '.timeline', function(event) {
     if ($('#navigator').attr('page') === 'home.html') {
       simple_close();
+      $('#TLChangeTab').hide();
     }
   });
 

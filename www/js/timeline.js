@@ -195,6 +195,7 @@ function showAlert(reload, more_load) {
 }
 
 function openTL(mode) {
+  $('#TLChangeTab').hide();
   if (mode === 'alert') {
     load('alert.html');
     showAlert();
@@ -216,31 +217,59 @@ function openTL(mode) {
   } else {
     closeAllws();
     load('home.html');
-    setTimeout(function() {
-      TL_change(timeline_default_tab);
-      now_TL = timeline_config[timeline_default_tab];
-      timeline_now_tab = timeline_default_tab;
-      document.getElementById('home_title').innerHTML = TLname(
-        timeline_config[timeline_now_tab]
-      );
-      showTL(null, null, null, true);
-
-      var dial = getConfig(1, 'dial'),
-        icon;
-      if (dial && dial != 'change') {
-        $('#dial_main').removeClass('invisible');
-        if (dial === 'toot') icon = 'fa-pencil';
-        else if (dial === 'alert') icon = 'fa-bell';
-        if (dial === 'reload') icon = 'fa-refresh';
-        document.getElementById('dial-icon').className = 'ons-icon fa ' + icon;
-      } else if (dial) {
-        $('#dial_TL').removeClass('invisible');
-        setsd();
-      }
-      if (getConfig(1, 'swipe_menu') == 1)
-        document.getElementById('tl_tabs').setAttribute('swipeable', '1');
+    setTimeout(function () {
+      initTimeline();
     }, 200);
   }
+}
+
+function initTimeline() {
+  var i = 0;
+  while (timeline_config[i]) {
+    document.querySelector(
+      '#TL' + i + '_main > .page__content'
+    ).innerHTML = '<div class="loading-now"><ons-progress-circular indeterminate></ons-progress-circular></div>';
+    i++;
+  }
+  TL_change(timeline_default_tab);
+  now_TL = timeline_config[timeline_default_tab];
+  timeline_now_tab = timeline_default_tab;
+  document.getElementById('home_title').innerHTML = TLname(
+    timeline_config[timeline_now_tab]
+  );
+  showTL(null, null, null, true);
+
+  var dial = getConfig(1, 'dial'),
+    icon;
+  if (dial && dial != 'change') {
+    $('#dial_main').removeClass('invisible');
+    if (dial === 'toot') icon = 'fa-pencil';
+    else if (dial === 'alert') icon = 'fa-bell';
+    if (dial === 'reload') icon = 'fa-refresh';
+    document.getElementById('dial-icon').className = 'ons-icon fa ' + icon;
+  } else if (dial) {
+    $('#dial_TL').removeClass('invisible');
+    var bufhtml = '',
+      icons = {
+        home: 'fa fa-fw fa-home',
+        local: 'fa fa-fw fa-users',
+        federated: 'fa fa-fw fa-globe',
+        local_media: 'fa fa-fw fa-picture-o',
+        federated_media: 'ons-icon zmdi zmdi-collection-image-o',
+        hashtag: 'fa fa-fw fa-hashtag',
+        list: 'fa fa-fw fa-bars',
+        plus_local: '+ローカル',
+      };
+    i = 0;
+    bufhtml += '<div onclick="openTL(\'alert_nav\')"><span>' + i18next.t("navigation.notifications") + '</span><div><i class="fa fa-fw fa-bell"></i></div></div>';
+    while (i <= timeline_config.length - 1) {
+      bufhtml += '<div onclick="TL_change('+i+')"><span>' + TLname(timeline_config[i]) + '</span><div><i class="' + icons[TLident(timeline_config[i])] + '"></i></div></div>';
+      i++;
+    }
+    document.getElementById('TLChangeList').innerHTML = bufhtml;
+  }
+  if (getConfig(1, 'swipe_menu') == 1)
+    document.getElementById('tl_tabs').setAttribute('swipeable', '1');
 }
 
 /**
@@ -272,8 +301,7 @@ function showTL(mode, reload, more_load, clear_load) {
       if (last_load_TL)
         document.querySelector(
           '#TL' + last_load_TL + '_main > .page__content'
-        ).innerHTML =
-          '';
+        ).innerHTML = '<div class="loading-now"><ons-progress-circular indeterminate></ons-progress-circular></div>';
     } catch (e) {
       console.error(e);
     }
@@ -695,12 +723,13 @@ function TL_prev() {
 function TL_next() {
   var tab = document.getElementById('tl_tabs');
   var index = tab.getActiveTabIndex();
-  if (index !== -1 && index < 4) {
+  if (index !== -1 && index < timeline_config.length - 1) {
     tab.setActiveTab(index + 1);
   }
 }
 
 function TL_change(mode) {
+  $('#TLChangeTab').hide();
   var tab = document.getElementById('tl_tabs');
   tab.setActiveTab(mode);
 }
@@ -966,28 +995,9 @@ function editTLConfAdd(name) {
   );
 }
 
-function setsd() {
-  var i = 0,
-    icons = {
-      home: 'ons-icon fa fa-home',
-      local: 'ons-icon fa fa-users',
-      federated: 'ons-icon fa fa-globe',
-      local_media: 'ons-icon fa fa-picture-o',
-      federated_media: 'ons-icon zmdi zmdi-collection-image-o',
-      hashtag: 'ons-icon fa fa-hashtag',
-      list: 'ons-icon fa fa-bars',
-      plus_local: '+ローカル',
-    };
-  while (i <= 4) {
-    document.getElementById('sd_icon' + i).className =
-      icons[TLident(timeline_config[i])];
-    i++;
-  }
-}
-
 function closeAllws() {
   try {
-    for (var i = 0; i <= 4; i++) {
+    for (var i = 0; i <= timeline_config.length - 1; i++) {
       if (TL_websocket[i]) {
         TL_websocket[i].close();
         TL_websocket[i] = null;
@@ -1000,6 +1010,11 @@ function closeAllws() {
 }
 
 function AddTLConfig() {
+  if (timeline_config.length >= 10) {
+    ons.notification.alert(dialog_i18n('err_new_tl', 1), { title: dialog_i18n('err_new_tl') });
+    return;
+  }
+
   var buttons = [
       i18next.t('actionsheet.editTL.hashtag'),
       i18next.t('actionsheet.editTL.list'),
