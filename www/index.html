@@ -89,6 +89,7 @@
       var FCM_token = null;
       var now_userconf = {};
       var lng = "en";
+      var TL_toot_list = [];
     </script>
     <script src="config/instance.js"></script>
     <script src="config/config.js"></script>
@@ -615,38 +616,26 @@
       </ons-page>
     </ons-template>
     <ons-template id="tl-0.html">
-      <ons-page id="TL0_main" class="timeline">
-        <div class="loading-now">
-          <ons-progress-circular indeterminate></ons-progress-circular>
-        </div>
-      </ons-page>
+      <ons-lazy-repeat id="infinite-list_0"></ons-lazy-repeat>
     </ons-template>
     <ons-template id="tl-1.html">
       <ons-page id="TL1_main" class="timeline">
-        <div class="loading-now">
-          <ons-progress-circular indeterminate></ons-progress-circular>
-        </div>
+        <ons-lazy-repeat id="infinite-list_1"></ons-lazy-repeat>
       </ons-page>
     </ons-template>
     <ons-template id="tl-2.html">
       <ons-page id="TL2_main" class="timeline">
-        <div class="loading-now">
-          <ons-progress-circular indeterminate></ons-progress-circular>
-        </div>
+        <ons-lazy-repeat id="infinite-list_2"></ons-lazy-repeat>
       </ons-page>
     </ons-template>
     <ons-template id="tl-3.html">
       <ons-page id="TL3_main" class="timeline">
-        <div class="loading-now">
-          <ons-progress-circular indeterminate></ons-progress-circular>
-        </div>
+        <ons-lazy-repeat id="infinite-list_3"></ons-lazy-repeat>
       </ons-page>
     </ons-template>
     <ons-template id="tl-4.html">
       <ons-page id="TL4_main" class="timeline">
-        <div class="loading-now">
-          <ons-progress-circular indeterminate></ons-progress-circular>
-        </div>
+        <ons-lazy-repeat id="infinite-list_4"></ons-lazy-repeat>
       </ons-page>
     </ons-template>
     <ons-template id="alert.html">

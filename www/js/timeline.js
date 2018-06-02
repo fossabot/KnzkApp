@@ -267,13 +267,14 @@ function showTL(mode, reload, more_load, clear_load) {
     toot_new_id = 0;
     toot_old_id = 0;
     more_load = false;
+    TL_toot_list = [];
     setTLheadcolor(0);
     try {
       if (last_load_TL)
         document.querySelector(
           '#TL' + last_load_TL + '_main > .page__content'
         ).innerHTML =
-          '';
+          ons.createElement('<ons-lazy-repeat id="infinite-list_' + last_load_TL + '"></ons-lazy-repeat>');
     } catch (e) {
       console.error(e);
     }
@@ -394,15 +395,10 @@ function showTL(mode, reload, more_load, clear_load) {
                                   ).innerHTML +
                                   timeline_store_data[instance_ws][now_tab] +
                                   toot_card(ws_reshtml, 'full', null, TLmode);
-                              else
-                                document.querySelector(
-                                  '#TL' + now_tab + '_main > .page__content'
-                                ).innerHTML =
-                                  toot_card(ws_reshtml, 'full', null, TLmode) +
-                                  timeline_store_data[instance_ws][now_tab] +
-                                  document.querySelector(
-                                    '#TL' + now_tab + '_main > .page__content'
-                                  ).innerHTML;
+                              else {
+                                TL_toot_list.unshift(toot_card(ws_reshtml, 'full', null, TLmode));
+                                updateTLRepeat();
+                              }
 
                               timeline_store_data[instance_ws][now_tab] = '';
                               home_auto_num = 0;
@@ -422,9 +418,7 @@ function showTL(mode, reload, more_load, clear_load) {
                                   TLmode
                                 );
                               else
-                                timeline_store_data[instance_ws][now_tab] =
-                                  toot_card(ws_reshtml, 'full', null, TLmode) +
-                                  timeline_store_data[instance_ws][now_tab];
+                                TL_toot_list.unshift(toot_card(ws_reshtml, 'full', null, TLmode));
 
                               if (!home_auto_event) {
                                 home_auto_event = true;
@@ -481,43 +475,67 @@ function showTL(mode, reload, more_load, clear_load) {
           while (json[i]) {
             var TLmode =
               mode === 'local_media' || mode === 'public_media' ? 'media' : '';
-            reshtml += toot_card(json[i], 'full', null, TLmode);
+            
+            var tootbox = toot_card(json[i], 'full', null, TLmode);
+            
+            if (getConfig(1, 'chatmode') || more_load)
+              reshtml += tootbox;
+
+            TL_toot_list.push(tootbox);
 
             toot_new_id = getConfig(1, 'chatmode')
               ? json[i]['id']
               : json[0]['id'];
-            if (getConfig(1, 'chatmode')) toot_old_id = json[0]['id'];
+            
+            toot_old_id = getConfig(1, 'chatmode')
+              ? json[0]['id']
+              : json[i]['id'];
             i++;
           }
 
-          if (!getConfig(1, 'chatmode')) {
-            if (more_load && mode == last_load_TL && !clear_load) {
-              reshtml += document.querySelector(
-                '#TL' + timeline_now_tab + '_main > .page__content'
-              ).innerHTML;
-            }
-            if (more_load || mode != last_load_TL || clear_load) {
-              //TL初回
-              if (i !== 0) toot_old_id = json[i - 1]['id'];
-              reshtml +=
-                "<button class='button button--large--quiet more_load_bt_" +
-                timeline_now_tab +
-                "' onclick='showTL(null,null,this)'>" +
-                i18next.t('navigation.load_more') +
-                '</button>';
-            }
+          if (more_load && mode == last_load_TL && !clear_load && getConfig(1, 'chatmode')) {
+            reshtml += document.querySelector(
+              '#TL' + timeline_now_tab + '_main > .page__content'
+            ).innerHTML;
+          }
+
+          if (!more_load && mode !== last_load_TL && !getConfig(1, 'chatmode')) {
+            var tl = document.querySelector('#TL' + timeline_now_tab + '_main');
+
+            tl.onInfiniteScroll = function (done) {
+              showTL(null, null, done);
+            };
           }
           last_load_TL = timeline_now_tab;
-          document.querySelector(
+          if (getConfig(1, 'chatmode') || more_load)
+            document.querySelector(
             '#TL' + timeline_now_tab + '_main > .page__content'
-          ).innerHTML = reshtml;
+            ).innerHTML = reshtml;
+          else
+            updateTLRepeat();  
+        
           if (reload && reload !== 'dial') reload();
+          if (!getConfig(1, 'chatmode') && more_load) more_load();
           if (getConfig(1, 'chatmode') && !more_load)
             $('.page__content').scrollTop(99999999999999999999999);
           return true;
         }
       });
   }
+}
+
+function updateTLRepeat() {
+  var list = document.getElementById('infinite-list_' + timeline_now_tab);
+
+  list.delegate = {
+    createItemContent: function (index) {
+      return TL_toot_list[index];
+    },
+
+    countItems: function () {
+      return TL_toot_list.length;
+    }
+  };
 }
 
 function showTagTL(tag, more_load) {
