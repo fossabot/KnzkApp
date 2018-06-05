@@ -71,6 +71,7 @@ function init() {
                 timeline_config = getConfig(3, 'config');
                 timeline_default_tab =
                   getConfig(3, 'default') === '' ? 0 : getConfig(3, 'default');
+                timeline_list_names = getConfig(3, 'list_names');
 
                 if (now_userconf['id'] == undefined)
                   localStorage.setItem('knzkapp_now_mastodon_id', json.id);
@@ -391,6 +392,10 @@ function initevent() {
 
     if (event.enterPage.id === 'config_TL-page') {
       initTLConf();
+    }
+
+    if (event.enterPage.id === 'lists-page') {
+      renderListsCollection();
     }
   });
 

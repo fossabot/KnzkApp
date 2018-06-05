@@ -139,6 +139,13 @@
       }
     }
   },
+  "lists": {
+    "title": "Lists",
+    "people": {
+      "title": "Edit list",
+      "accounts": "リストに登録しているアカウント"
+    }
+  },
   "bookmark": {
     "title": "Bookmarks",
     "note": "ブックマークはKnzkApp独自の機能で、データが端末内に保管されます。<br>ブックマークはインスタンスごとに区別されます。",
@@ -288,6 +295,14 @@
     "err_new_tl": {
       "title": "Error",
       "text": "これ以上タイムラインを増やすことはできません。"
+    },
+    "editlist": {
+      "title": "Add / Edit Lists",
+      "text": "名前を入力してください。(空欄でキャンセル)"
+    },
+    "deletelist": {
+      "title": "Delete list",
+      "text": "Are you sure you want to delete?"
     }
   },
   "search": {
@@ -337,6 +352,12 @@
         "default": "デフォルトで表示するTLに設定する",
         "delete": "削除する"
       }
+    },
+    "editlist": {
+      "name": "Rename list",
+      "people": "Edit list",
+      "delete": "Delete list",
+      "add": "Add to timeline page"
     }
   },
   "config": {

@@ -217,7 +217,7 @@ function openTL(mode) {
   } else {
     closeAllws();
     load('home.html');
-    setTimeout(function () {
+    setTimeout(function() {
       initTimeline();
     }, 200);
   }
@@ -226,9 +226,8 @@ function openTL(mode) {
 function initTimeline() {
   var i = 0;
   while (timeline_config[i]) {
-    document.querySelector(
-      '#TL' + i + '_main > .page__content'
-    ).innerHTML = '<div class="loading-now"><ons-progress-circular indeterminate></ons-progress-circular></div>';
+    document.querySelector('#TL' + i + '_main > .page__content').innerHTML =
+      '<div class="loading-now"><ons-progress-circular indeterminate></ons-progress-circular></div>';
     i++;
   }
   TL_change(timeline_default_tab);
@@ -261,9 +260,19 @@ function initTimeline() {
         plus_local: '+ローカル',
       };
     i = 0;
-    bufhtml += '<div onclick="openTL(\'alert_nav\')"><span>' + i18next.t("navigation.notifications") + '</span><div><i class="fa fa-fw fa-bell"></i></div></div>';
+    bufhtml +=
+      '<div onclick="openTL(\'alert_nav\')"><span>' +
+      i18next.t('navigation.notifications') +
+      '</span><div><i class="fa fa-fw fa-bell"></i></div></div>';
     while (i <= timeline_config.length - 1) {
-      bufhtml += '<div onclick="TL_change('+i+')"><span>' + TLname(timeline_config[i]) + '</span><div><i class="' + icons[TLident(timeline_config[i])] + '"></i></div></div>';
+      bufhtml +=
+        '<div onclick="TL_change(' +
+        i +
+        ')"><span>' +
+        TLname(timeline_config[i]) +
+        '</span><div><i class="' +
+        icons[TLident(timeline_config[i])] +
+        '"></i></div></div>';
       i++;
     }
     document.getElementById('TLChangeList').innerHTML = bufhtml;
@@ -301,7 +310,8 @@ function showTL(mode, reload, more_load, clear_load) {
       if (last_load_TL)
         document.querySelector(
           '#TL' + last_load_TL + '_main > .page__content'
-        ).innerHTML = '<div class="loading-now"><ons-progress-circular indeterminate></ons-progress-circular></div>';
+        ).innerHTML =
+          '<div class="loading-now"><ons-progress-circular indeterminate></ons-progress-circular></div>';
     } catch (e) {
       console.error(e);
     }
@@ -795,7 +805,9 @@ function TLident(mode) {
 function TLname(mode) {
   var n = TLident(mode),
     text;
-  if (n === 'hashtag' || name === 'list') text = mode;
+  if (n === 'hashtag') text = mode;
+  else if (n === 'list')
+    text = 'list:' + timeline_list_names['' + mode.split(':')[1]];
   else text = i18next.t('timeline.' + n);
   return text;
 }
@@ -887,13 +899,6 @@ function initTLConf() {
     if (timeline_default_tab === i) {
       ch = 'checked';
     }
-    var TL_ident = TLident(timeline_config[i]),
-      name;
-    if (TL_ident === 'hashtag' || TL_ident === 'list') {
-      name = timeline_config[i];
-    } else {
-      name = TLname(timeline_config[i]);
-    }
 
     reshtml +=
       '<ons-list-item class="list-item">\n' +
@@ -912,7 +917,7 @@ function initTLConf() {
       '" class="center list-item__center" onclick="editTLConfigOption(' +
       i +
       ')">' +
-      name +
+      TLname(timeline_config[i]) +
       '</label>\n' +
       '<label class="right list-item__right">\n' +
       up +
@@ -934,6 +939,7 @@ function editTLdel(i) {
       JSON.stringify({
         config: timeline_config,
         default: timeline_default_tab,
+        list_names: timeline_list_names,
       })
     );
   }
@@ -943,6 +949,7 @@ function editTLdel(i) {
     JSON.stringify({
       config: timeline_config,
       default: timeline_default_tab,
+      list_names: timeline_list_names,
     })
   );
   initTLConf();
@@ -966,6 +973,7 @@ function editTLConf(i, mode) {
     JSON.stringify({
       config: timeline_config,
       default: timeline_default_tab,
+      list_names: timeline_list_names,
     })
   );
   initTLConf();
@@ -979,20 +987,29 @@ function editTLConfD(i) {
     JSON.stringify({
       config: timeline_config,
       default: timeline_default_tab,
+      list_names: timeline_list_names,
     })
   );
   initTLConf();
 }
 
 function editTLConfAdd(name) {
+  if (timeline_config.length >= 10) {
+    ons.notification.alert(dialog_i18n('err_new_tl', 1), {
+      title: dialog_i18n('err_new_tl'),
+    });
+    return;
+  }
   timeline_config.push(name);
   localStorage.setItem(
     'knzkapp_conf_mastodon_timeline',
     JSON.stringify({
       config: timeline_config,
       default: timeline_default_tab,
+      list_names: timeline_list_names,
     })
   );
+  showtoast('ok_conf_2');
 }
 
 function closeAllws() {
@@ -1011,7 +1028,9 @@ function closeAllws() {
 
 function AddTLConfig() {
   if (timeline_config.length >= 10) {
-    ons.notification.alert(dialog_i18n('err_new_tl', 1), { title: dialog_i18n('err_new_tl') });
+    ons.notification.alert(dialog_i18n('err_new_tl', 1), {
+      title: dialog_i18n('err_new_tl'),
+    });
     return;
   }
 
