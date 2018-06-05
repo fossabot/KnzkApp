@@ -302,13 +302,20 @@ function addAccountToList(id, isDelete) {
 
 function SearchListLoad() {
   var q = escapeHTML(document.getElementById('List-search').value);
-  Fetch('https://' + inst + '/api/v1/accounts/search?q=' + q + '&resolve=false&following=true', {
-    headers: {
-      'content-type': 'application/json',
-      Authorization: 'Bearer ' + now_userconf['token'],
-    },
-    method: 'GET',
-  })
+  Fetch(
+    'https://' +
+      inst +
+      '/api/v1/accounts/search?q=' +
+      q +
+      '&resolve=false&following=true',
+    {
+      headers: {
+        'content-type': 'application/json',
+        Authorization: 'Bearer ' + now_userconf['token'],
+      },
+      method: 'GET',
+    }
+  )
     .then(function(response) {
       if (response.ok) {
         return response.json();
@@ -408,7 +415,7 @@ function deleteList(id, title) {
     .confirm(dialog_i18n('deletelist', 1) + '<br>(' + title + ')', {
       title: dialog_i18n('deletelist'),
     })
-    .then(function (e) {
+    .then(function(e) {
       if (e === 1) {
         Fetch('https://' + inst + '/api/v1/lists/' + id, {
           headers: {
@@ -426,7 +433,7 @@ function deleteList(id, title) {
               return false;
             }
           })
-          .then(function (json) {
+          .then(function(json) {
             renderListsCollection();
           });
       }

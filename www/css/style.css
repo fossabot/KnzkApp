@@ -780,17 +780,17 @@ img.emoji {
 
 #TLChangeTab > .toast {
   border-radius: 0;
-    margin: 0;
-    left: 0;
-    width: 100%;
-    padding: 0;
+  margin: 0;
+  left: 0;
+  width: 100%;
+  padding: 0;
 }
 
 #TLChangeTab .toast__message {
-    margin: 10px 0 15px;
-    white-space: normal;
-    line-height: 1;
-    color: #fff;
+  margin: 10px 0 15px;
+  white-space: normal;
+  line-height: 1;
+  color: #fff;
 }
 
 #TLChangeTab {

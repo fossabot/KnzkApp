@@ -1107,3 +1107,15 @@ function addHashtag() {
       }
     });
 }
+
+function addTagToTimeline(tag) {
+  ons.notification
+    .confirm(dialog_i18n('add_tag', 1), {
+      title: dialog_i18n('add_tag'),
+    })
+    .then(function(e) {
+      if (e === 1) {
+        editTLConfAdd('hashtag:' + escapeHTML(tag));
+      }
+    });
+}

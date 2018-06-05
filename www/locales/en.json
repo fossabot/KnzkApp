@@ -303,6 +303,10 @@
     "deletelist": {
       "title": "Delete list",
       "text": "Are you sure you want to delete?"
+    },
+    "add_tag": {
+      "title": "このタグをタイムラインに追加",
+      "text": "Are you sure you want to add?"
     }
   },
   "search": {
