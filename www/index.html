@@ -773,7 +773,7 @@
               data-i18n="config.preferences.tl.chatmode.sub">下に行くほど最新の投稿になるモード</span>
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'chatmode')" input-id="conf-chatmode"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'chatmode')" input-id="conf-chatmode"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item>
@@ -781,7 +781,7 @@
             ジョークモード
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'joke')" input-id="conf-joke"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'joke')" input-id="conf-joke"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item>
@@ -789,7 +789,7 @@
             リアルタイム更新
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'realtime')" input-id="conf-realtime"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'realtime')" input-id="conf-realtime"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item>
@@ -797,7 +797,7 @@
             CW文章を常に表示する
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'cw')" input-id="conf-cw"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'cw')" input-id="conf-cw"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item>
@@ -805,7 +805,7 @@
             NSFWメディアを常に表示する
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'nsfw')" input-id="conf-nsfw"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'nsfw')" input-id="conf-nsfw"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item modifier="chevron" tappable onclick="loadNav('config_collapse.html')">
@@ -819,7 +819,7 @@
               class="list-item__subtitle" data-i18n="config.preferences.tl.head_reset.sub">リセットさせる事で軽くなります</span>
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'head_reset')" input-id="conf-head_reset"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'head_reset')" input-id="conf-head_reset"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item>
@@ -827,7 +827,7 @@
             復帰時にリロードしない
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'resume_reload')" input-id="conf-resume_reload"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'resume_reload')" input-id="conf-resume_reload"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item modifier="chevron" tappable onclick="loadNav('config_TL.html')">
@@ -857,7 +857,7 @@
             <span class="list-item__title" data-i18n="config.preferences.display.bigfav">大きなお気に入りボタン</span><span class="list-item__subtitle">for おにいさん</span>
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'bigfav')" input-id="conf-bigfav"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'bigfav')" input-id="conf-bigfav"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item>
@@ -865,7 +865,7 @@
             回転を無効化 (BBCode)
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'spin')" input-id="conf-spin"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'spin')" input-id="conf-spin"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item>
@@ -873,7 +873,7 @@
             メニューにお気に入り一覧を表示
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'menu-fav')" input-id="conf-menu-fav"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'menu-fav')" input-id="conf-menu-fav"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item>
@@ -881,7 +881,7 @@
             メディアを完全に表示
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'image_full')" input-id="conf-image_full"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'image_full')" input-id="conf-image_full"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item>
@@ -890,7 +890,7 @@
               data-i18n="config.preferences.display.copy.sub">TLトゥート欄のみ · OSのコピペができない人向け</span>
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'cp_popover')" input-id="conf-cp_popover"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'cp_popover')" input-id="conf-cp_popover"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item>
@@ -901,17 +901,6 @@
             <ons-select id="conf-theme" onchange="change_conf(1, 'theme', true)">
               <option value="">Mastodon</option>
               <option value="css/theme/dark.css" id="theme_css/theme/dark.css">Dark</option>
-            </ons-select>
-          </div>
-        </ons-list-item>
-        <ons-list-item id="item-dp">
-          <div class="center" data-i18n="config.preferences.display.platform.title">
-            プラットフォームデザイン
-          </div>
-          <div class="right">
-            <ons-select id="conf-design_platform" onchange="change_conf(1, 'design_platform', true)">
-              <option value="ios" id="dp_ios" data-i18n="config.preferences.display.platform.ios">iOS向け (軽い)</option>
-              <option value="android" id="dp_android" data-i18n="config.preferences.display.platform.android">Android向け</option>
             </ons-select>
           </div>
         </ons-list-item>
@@ -936,7 +925,7 @@
               data-i18n="config.preferences.system.swipe_menu.sub">OFF:ジェスチャスワイパー<br>ON:タブスワイパー+メニュー</span>
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'swipe_menu')" input-id="conf-swipe_menu"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'swipe_menu')" input-id="conf-swipe_menu"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item>
@@ -945,7 +934,7 @@
               class="list-item__subtitle" data-i18n="config.preferences.system.gpu.sub">表示に問題が発生する場合はオン</span>
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'gpu')" input-id="conf-gpu"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'gpu')" input-id="conf-gpu"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item>
@@ -953,7 +942,7 @@
             <span class="list-item__title" data-i18n="config.preferences.system.SendLog.title">エラーログを開発者に送信</span><span class="list-item__subtitle"><a href="https://knzkapp.yuzu.tk/privacy.html" target="_blank" data-i18n="config.preferences.system.SendLog.sub">プライバシーポリシー</a></span>
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'SendLog', null, true)" input-id="conf-SendLog"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'SendLog', null, true)" input-id="conf-SendLog"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item>
@@ -961,7 +950,7 @@
             未読通知ラベルを表示しない
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'no_unread_label')" input-id="conf-no_unread_label"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'no_unread_label')" input-id="conf-no_unread_label"></ons-switch>
           </div>
         </ons-list-item>
       </ons-list>
@@ -973,7 +962,7 @@
               data-i18n="config.preferences.eco.gif.sub">電池の節約</span>
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'no_gif')" input-id="conf-no_gif"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'no_gif')" input-id="conf-no_gif"></ons-switch>
           </div>
         </ons-list-item>
         <ons-list-item>
@@ -982,7 +971,7 @@
               class="list-item__subtitle" data-i18n="config.preferences.eco.custom_emoji.sub">ネットワーク通信の節約</span>
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(1, 'no_custom_emoji')" input-id="conf-no_custom_emoji"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(1, 'no_custom_emoji')" input-id="conf-no_custom_emoji"></ons-switch>
           </div>
         </ons-list-item>
       </ons-list>
@@ -1047,7 +1036,7 @@
             折りたたみを有効化
           </div>
           <div class="right">
-            <ons-switch onclick="change_conf(2, 'collapse')" input-id="conf-col-collapse"></ons-switch>
+            <ons-switch modifier="material" onclick="change_conf(2, 'collapse')" input-id="conf-col-collapse"></ons-switch>
           </div>
         </ons-list-item>
       </ons-list>
@@ -1145,7 +1134,7 @@
             プッシュ通知を有効化
           </div>
           <div class="right">
-            <ons-switch onclick="changeNotification()" input-id="noti-mode"></ons-switch>
+            <ons-switch modifier="material" onclick="changeNotification()" input-id="noti-mode"></ons-switch>
           </div>
         </ons-list-item>
       </ons-list>
@@ -1719,7 +1708,7 @@
                 Smooth
               </div>
               <div class="right">
-                <ons-switch onclick="Doodle_config('smooth')" input-id="doodle_smooth"></ons-switch>
+                <ons-switch modifier="material" onclick="Doodle_config('smooth')" input-id="doodle_smooth"></ons-switch>
               </div>
             </ons-list-item>
             <ons-list-item>
@@ -1727,7 +1716,7 @@
                 Adaptive
               </div>
               <div class="right">
-                <ons-switch onclick="Doodle_config('adaptive')" input-id="doodle_adaptive"></ons-switch>
+                <ons-switch modifier="material" onclick="Doodle_config('adaptive')" input-id="doodle_adaptive"></ons-switch>
               </div>
             </ons-list-item>
             <ons-list-item>
@@ -2317,7 +2306,7 @@
           接続環境が悪いか鯖落ちしている可能性があります。
         </span>
     </ons-toast>
-    <ons-alert-dialog id="cannot-use-ls">
+    <ons-alert-dialog modifier="material" id="cannot-use-ls">
       <div class="alert-dialog-title" data-i18n="dialogs_html.error">エラー</div>
       <div class="alert-dialog-content">
         <span data-i18n="[html]dialogs_html.cannot_use_ls">
@@ -2326,7 +2315,7 @@
           </span>
       </div>
     </ons-alert-dialog>
-    <ons-alert-dialog id="dialog-original_post">
+    <ons-alert-dialog modifier="material" id="dialog-original_post">
       <div class="alert-dialog-title" data-i18n="original_toot.title">元のトゥート</div>
       <div class="alert-dialog-content">
         <pre id="original_post_box"></pre>
@@ -2340,7 +2329,7 @@
     <ons-toast id="ok-copy">
       <span data-i18n="dialogs_html.ok_copy">コピーしました。</span>
     </ons-toast>
-    <ons-alert-dialog id="cannot-connect-sv-login">
+    <ons-alert-dialog modifier="material" id="cannot-connect-sv-login">
       <div class="alert-dialog-title" data-i18n="dialogs_html.error">エラー</div>
       <div class="alert-dialog-content">
         <span data-i18n="dialogs_html.sv_login">
@@ -2376,7 +2365,7 @@
           エラー: 取得できませんでした。
         </span>
     </ons-toast>
-    <ons-alert-dialog id="DB_migration">
+    <ons-alert-dialog modifier="material" id="DB_migration">
       <div class="alert-dialog-title" data-i18n="dialogs_html.DB_migrate.title">起動しています...</div>
       <div class="alert-dialog-content" data-i18n="[html]dialogs_html.DB_migrate.text">
         データベースのマイグレーション中です。<br> しばらくお待ち下さい...

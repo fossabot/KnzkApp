@@ -28,6 +28,7 @@ function openDoodle(simple) {
 function Doodle_reset() {
   ons.notification
     .confirm(i18next.t('doodle.reset.text'), {
+      modifier: 'material',
       title: i18next.t('doodle.reset.title'),
     })
     .then(function(e) {
@@ -52,6 +53,7 @@ function closeDoodle(force) {
   } else {
     ons.notification
       .confirm(i18next.t('doodle.reset.text'), {
+        modifier: 'material',
         title: i18next.t('doodle.reset.close'),
       })
       .then(function(e) {
@@ -77,6 +79,7 @@ function dataURLtoFile(dataURI) {
 function Doodle_upload() {
   ons.notification
     .confirm(i18next.t('doodle.upload.text'), {
+      modifier: 'material',
       title: i18next.t('doodle.upload.title'),
     })
     .then(function(e) {

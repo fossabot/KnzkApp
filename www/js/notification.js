@@ -118,6 +118,7 @@ function changeNotification(force) {
       });
   } else {
     ons.notification.alert(dialog_i18n('err_fcm_2', 1), {
+      modifier: 'material',
       title: dialog_i18n('err_fcm_2'),
     });
     document.getElementById('noti-mode').checked = !!is_unregister;
@@ -126,7 +127,10 @@ function changeNotification(force) {
 
 function addKeyWord() {
   ons.notification
-    .prompt(dialog_i18n('keyword', 1), { title: dialog_i18n('keyword') })
+    .prompt(dialog_i18n('keyword', 1), {
+      modifier: 'material',
+      title: dialog_i18n('keyword'),
+    })
     .then(function(repcom) {
       if (repcom) {
         var config = LoadNotificationConfig()['option'];
@@ -204,6 +208,7 @@ function setNotificationServer() {
           initNotificationPage();
         } else {
           ons.notification.alert(dialog_i18n('err_notification_sv', 1), {
+            modifier: 'material',
             title: dialog_i18n('err_notification_sv'),
           });
           hide('now_loading');

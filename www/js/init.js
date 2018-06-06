@@ -481,6 +481,7 @@ function initevent() {
       });
     } catch (e) {
       ons.notification.alert(dialog_i18n('err_fcm', 1), {
+        modifier: 'material',
         title: dialog_i18n('err_fcm'),
       });
       sendLog('Error/FCM', '');
@@ -546,20 +547,11 @@ function init_d() {
       ons.disableAutoStyling();
     }
 
-    if (platform_mode === 'ios') {
-      button = 'button';
-      quiet = button + ' button--quiet';
-      light = button + ' button--light';
-      large_quiet = button + ' button--large--quiet';
-      ons.platform.select('ios');
-    } else {
-      button = 'button button--material';
-      quiet = 'button button--material--flat';
-      light = button + ' button--light';
-      large_quiet = button + ' button--material--flat button--large';
-      ons.platform.select('android');
-      css += '#toot-button { padding-bottom: 0; }';
-    }
+    button = 'button';
+    quiet = button + ' button--quiet';
+    light = button + ' button--light';
+    large_quiet = button + ' button--large--quiet';
+    ons.platform.select('ios');
 
     if (getConfig(1, 'spin') == 1 || getConfig(1, 'gpu') != 1) {
       if (getConfig(1, 'spin') == 1) {
@@ -602,6 +594,7 @@ ons.ready(function() {
   init();
   if (is_debug) {
     ons.notification.alert('この状態で公開しないで下さい！', {
+      modifier: 'material',
       title: 'Debug mode',
     });
     if (getConfig(1, 'SendLog') === '') setConfig(1, 'SendLog', '0');
@@ -609,6 +602,7 @@ ons.ready(function() {
     if (getConfig(1, 'SendLog') === '') {
       ons.notification
         .confirm(dialog_i18n('log', 1), {
+          modifier: 'material',
           title: dialog_i18n('log'),
           buttonLabels: [
             i18next.t('dialogs_js.log.no'),

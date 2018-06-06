@@ -381,6 +381,7 @@ function editList(id, title) {
   var method = id ? 'PUT' : 'POST';
   ons.notification
     .prompt(dialog_i18n('editlist', 1), {
+      modifier: 'material',
       title: dialog_i18n('editlist'),
       defaultValue: title ? title : '',
     })
@@ -413,6 +414,7 @@ function editList(id, title) {
 function deleteList(id, title) {
   ons.notification
     .confirm(dialog_i18n('deletelist', 1) + '<br>(' + title + ')', {
+      modifier: 'material',
       title: dialog_i18n('deletelist'),
     })
     .then(function(e) {

@@ -19,6 +19,7 @@ function tutorial_open() {
 
 function tutorial_alert(id) {
   ons.notification.alert(i18next.t('tutorial.page2.alert.' + id), {
+    modifier: 'material',
     title: 'Tutorial',
   });
 }

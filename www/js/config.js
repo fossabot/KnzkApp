@@ -237,12 +237,14 @@ function ConfigSetup() {
 function clearAllConfig() {
   ons.notification
     .confirm(dialog_i18n('clear_account.1', 1), {
+      modifier: 'material',
       title: dialog_i18n('clear_account'),
     })
     .then(function(e) {
       if (e === 1) {
         ons.notification
           .confirm(dialog_i18n('clear_account.2', 1), {
+            modifier: 'material',
             title: dialog_i18n('clear_account'),
           })
           .then(function(e) {

@@ -263,6 +263,7 @@ function bbcodegen(force) {
   if (spin > 9 && !force) {
     ons.notification
       .confirm(dialog_i18n('warning_spin', 1), {
+        modifier: 'material',
         title: dialog_i18n('warning_spin'),
       })
       .then(function(e) {
