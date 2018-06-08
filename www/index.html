@@ -1776,6 +1776,45 @@
       </div>
     </ons-page>
   </ons-template>
+
+  <ons-template id="toot_more.html">
+    <ons-page id="toot_more-page">
+      <div id="toot_more_box"></div>
+      <ons-toolbar-bottom onclick="BackTab('down')">
+        <ons-list>
+          <ons-list-item modifier="chevron" tappable onclick="show_post(more_status_id)">詳細を表示</ons-list-item>
+          <ons-list-item modifier="chevron" tappable onclick="openURL(tl_postdata[more_status_id]['url'])">ブラウザで表示</ons-list-item>
+          <ons-list-item tappable onclick="copy(tl_postdata[more_status_id]['url'])">URLをコピー</ons-list-item>
+
+          <ons-list-header>元のトゥート...</ons-list-header>
+          <ons-list-item tappable onclick="copy(tl_postdata[more_status_id]['url'])">元のトゥートを表示</ons-list-item>
+          <ons-list-item tappable onclick="copy(tl_postdata[more_status_id]['url'])">トゥートをコピー</ons-list-item>
+          <ons-list-item tappable onclick="copy(tl_postdata[more_status_id]['url'])">引用してトゥート</ons-list-item>
+
+          <ons-list-header>近くのトゥートを表示...</ons-list-header>
+          <div id="toot_more_near"></div>
+
+          <div id="toot_more_other_users" class="invisible">
+            <ons-list-item tappable onclick="changeBookmark(more_status_id)"><span id="toot_more_bookmark">ブックマークする</span></ons-list-item>
+            <ons-list-item tappable onclick="report()">通報</ons-list-item>
+          </div>
+          <div id="toot_more_mine" class="invisible">
+            <ons-list-item tappable onclick="pin_set(more_status_id)"><span id="toot_more_pinned">ピン留め</span></ons-list-item>
+            <ons-list-item tappable onclick="delete_post()">削除</ons-list-item>
+          </div>
+    <ons-list-item>
+      <div class="left">
+        <ons-icon icon="fa-times" class="list-item__icon"></ons-icon>
+      </div>
+      <div class="center">
+        <span data-i18n="navigation.close">閉じる</span>
+      </div>
+    </ons-list-item>
+        </ons-list>
+      </ons-toolbar-bottom>
+    </ons-page>
+  </ons-template>
+
   <ons-template id="showtag.html">
     <ons-page>
       <ons-toolbar>

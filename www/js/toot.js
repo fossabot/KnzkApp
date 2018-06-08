@@ -698,82 +698,29 @@ function pin_set(id) {
 }
 
 function more(id) {
-  var url = tl_postdata[id]['url'],
-    acct = tl_postdata[id]['account']['acct'];
+  loadNav('toot_more.html', 'up');
   more_status_id = '' + id;
   more_acct_id = tl_postdata[id]['account']['id'];
-  if (now_userconf['id'] === tl_postdata[id]['account']['id']) {
-    var pin =
-      tl_postdata[id]['pinned'] === true
-        ? i18next.t('actionsheet.toot.pin.unset')
-        : i18next.t('actionsheet.toot.pin.set');
-    ons
-      .openActionSheet({
-        cancelable: true,
-        buttons: [
-          i18next.t('actionsheet.toot.more'),
-          i18next.t('actionsheet.toot.openbrowser'),
-          i18next.t('actionsheet.toot.url'),
-          i18next.t('actionsheet.toot.original_toot'),
-          i18next.t('actionsheet.toot.near'),
-          {
-            label: pin,
-            modifier: 'fa-thumb-tack',
-          },
-          {
-            label: i18next.t('actionsheet.toot.delete'),
-            modifier: 'destructive',
-          },
-          {
-            label: i18next.t('navigation.cancel'),
-            icon: 'md-close',
-          },
-        ],
-      })
-      .then(function(index) {
-        if (index == 0) show_post(more_status_id);
-        else if (index == 1) openURL(url);
-        else if (index == 2) copy(url);
-        else if (index == 3) original_post(more_status_id, url, acct);
-        else if (index == 4) nearToot(more_status_id, acct.split('@')[1]);
-        else if (index == 5) pin_set(more_status_id);
-        else if (index == 6) delete_post();
-      });
-  } else {
-    var bookmark =
-      checkBookmark(id) === true
-        ? i18next.t('actionsheet.toot.bookmark.unset')
-        : i18next.t('actionsheet.toot.bookmark.set');
-    ons
-      .openActionSheet({
-        cancelable: true,
-        buttons: [
-          i18next.t('actionsheet.toot.more'),
-          i18next.t('actionsheet.toot.openbrowser'),
-          i18next.t('actionsheet.toot.url'),
-          i18next.t('actionsheet.toot.original_toot'),
-          i18next.t('actionsheet.toot.near'),
-          bookmark,
-          {
-            label: i18next.t('dialogs_js.report.title'),
-            modifier: 'destructive',
-          },
-          {
-            label: i18next.t('navigation.cancel'),
-            icon: 'md-close',
-          },
-        ],
-      })
-      .then(function(index) {
-        if (index == 0) show_post(more_status_id);
-        else if (index == 1) openURL(url);
-        else if (index == 2) copy(url);
-        else if (index == 3) original_post(more_status_id, url, acct);
-        else if (index == 4) nearToot(more_status_id, acct.split('@')[1]);
-        else if (index == 5) changeBookmark(more_status_id);
-        else if (index == 6) report();
-      });
-  }
+  setTimeout(function() {
+    document.getElementById('toot_more_box').innerHTML = toot_card(tl_postdata[id], 'full');
+    if (now_userconf['id'] === tl_postdata[id]['account']['id']) {
+      document.getElementById('toot_more_mine').className = '';
+      var pin =
+        tl_postdata[id]['pinned'] === true
+          ? i18next.t('actionsheet.toot.pin.unset')
+          : i18next.t('actionsheet.toot.pin.set');
+      document.getElementById('toot_more_pinned').innerHTML = pin;
+      //else if (index == 3) original_post(more_status_id, url, acct);
+      //else if (index == 4) nearToot(more_status_id, acct.split('@')[1]);
+    } else {
+      document.getElementById('toot_more_other_users').className = '';
+      var bookmark =
+        checkBookmark(id) === true
+          ? i18next.t('actionsheet.toot.bookmark.unset')
+          : i18next.t('actionsheet.toot.bookmark.set');
+      document.getElementById('toot_more_bookmark').innerHTML = bookmark;
+    }
+  }, 500);
 }
 
 function nearToot(id, domain) {
