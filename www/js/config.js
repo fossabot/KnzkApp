@@ -5,13 +5,15 @@ function getConfig(type, name) {
     else if (type === 3) config_tmp[type] = localStorage.getItem('knzkapp_conf_mastodon_timeline');
     else if (type === 4) config_tmp[type] = localStorage.getItem('knzkapp_conf_mastodon_push');
     else if (type === 5) config_tmp[type] = localStorage.getItem('knzkapp_conf_mastodon_filter');
+    else if (type === 6) config_tmp[type] = localStorage.getItem('knzkapp_conf_mastodon_dock');
   }
 
   var data = config_tmp[type];
   data = JSON.parse(data);
-  if (type === 3) {
+  if (type === 3 || type === 6) {
     var acct = now_userconf['username'] + '@' + inst;
-    data[name] = data[acct] ? data[acct][name] : data['origin'][name];
+    if (type === 3) data[name] = data[acct] ? data[acct][name] : data['origin'][name];
+    if (type === 6) data[name] = data[acct] ? data[acct] : [];
   }
   return data[name] ? data[name] : '';
 }
@@ -23,6 +25,7 @@ function getConfig_original(type) {
     else if (type === 3) config_tmp[type] = localStorage.getItem('knzkapp_conf_mastodon_timeline');
     else if (type === 4) config_tmp[type] = localStorage.getItem('knzkapp_conf_mastodon_push');
     else if (type === 5) config_tmp[type] = localStorage.getItem('knzkapp_conf_mastodon_filter');
+    else if (type === 6) config_tmp[type] = localStorage.getItem('knzkapp_conf_mastodon_dock');
   }
   return JSON.parse(config_tmp[type]);
 }
@@ -54,6 +57,7 @@ function setConfig(name, id, value) {
   else if (name === 3) md = 'knzkapp_conf_mastodon_timeline';
   else if (name === 4) md = 'knzkapp_conf_mastodon_push';
   else if (name === 5) md = 'knzkapp_conf_mastodon_filter';
+  else if (name === 6) md = 'knzkapp_conf_mastodon_dock';
 
   var data = JSON.parse(localStorage.getItem(md));
   data[id] = value;
@@ -200,6 +204,8 @@ function ConfigSetup() {
           },
         })
       );
+
+      localStorage.setItem('knzkapp_conf_mastodon_dock', JSON.stringify({}));
     }
 
     localStorage.setItem('knzkapp_conf_version', last_version);
@@ -213,13 +219,13 @@ function clearAllConfig() {
     .confirm(dialog_i18n('clear_account.1', 1), {
       title: dialog_i18n('clear_account'),
     })
-    .then(function(e) {
+    .then(function (e) {
       if (e === 1) {
         ons.notification
           .confirm(dialog_i18n('clear_account.2', 1), {
             title: dialog_i18n('clear_account'),
           })
-          .then(function(e) {
+          .then(function (e) {
             if (e === 1) {
               localStorage.setItem(
                 'knzkapp_conf_mastodon',

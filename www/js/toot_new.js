@@ -339,18 +339,14 @@ function bbcode_color(color) {
 }
 
 function post(id, option, simple) {
+  var toot = document.getElementById(id).value;
   var media_id = Array(),
     i,
-    simple_id = '',
+    simple_id = simple ? '_simple' : '',
     optiondata = {
-      status: document.getElementById(id).value,
+      status: toot,
       visibility: option.visibility,
     };
-  if (simple) {
-    simple_close();
-    show('post_now');
-    simple_id = '_simple';
-  } else show('now_loading');
 
   var media = document.getElementsByClassName('media-upload' + simple_id);
 
@@ -359,6 +355,15 @@ function post(id, option, simple) {
   var vote3 = document.getElementById('vote_new_3' + simple_id).value;
   var vote4 = document.getElementById('vote_new_4' + simple_id).value;
   var votem = document.getElementById('vote_new_time' + simple_id).value;
+
+  if (simple) {
+    if (!media[0] && !toot) {
+      simple_open();
+      return false;
+    }
+    simple_close();
+    show('post_now');
+  } else show('now_loading');
 
   if (vote1 != '' && vote2 != '') {
     optiondata.isEnquete = true;
@@ -458,7 +463,10 @@ function simple_open() {
   if (instance_config[inst]['glitch_soc']) $('#localonly_bt_simple').removeClass('invisible');
   if (instance_config[inst]['markdown']) $('#md_note_simple').removeClass('invisible');
 
-  document.getElementById('simple_toot_TL_input').rows = 3;
+  $('#toot_box').removeClass('invisible');
+  $('#dock_box').addClass('invisible');
+  document.getElementById('simple_toot_post_icon').className = 'ons-icon fa-paper-plane-o fa';
+
   $('#simple_toot_TL_toolbar').addClass('simple_toot_open');
   $('#simple_more').removeClass('invisible');
 
@@ -469,7 +477,10 @@ function simple_open() {
 }
 
 function simple_close() {
-  document.getElementById('simple_toot_TL_input').rows = 1;
+  $('#toot_box').addClass('invisible');
+  $('#dock_box').removeClass('invisible');
+  document.getElementById('simple_toot_post_icon').className = 'ons-icon fa-pencil fa';
+
   $('#simple_toot_TL_toolbar').removeClass('simple_toot_open');
   $('#simple_more').addClass('invisible');
 

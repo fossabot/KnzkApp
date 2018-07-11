@@ -410,8 +410,7 @@
           "none": "None",
           "toot": "New toot",
           "notification": "Notification",
-          "reload": "Reload Timeline",
-          "menu": "Timeline menu"
+          "reload": "Reload Timeline"
         }
       },
       "display": {

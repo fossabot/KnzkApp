@@ -97,6 +97,7 @@
   </script>
   <script src="config/instance.js"></script>
   <script src="config/config.js"></script>
+  <script src="js/dock.js"></script>
   <script src="js/tutorial.js"></script>
   <script src="js/locale.js"></script>
   <script src="js/notification.js"></script>
@@ -477,12 +478,16 @@
                 </ons-button>
               </div>
               <div class="center">
-                <textarea class="textarea w-max" rows="1" placeholder="トゥート！" id="simple_toot_TL_input" onfocus="simple_open()" onkeyup="check_limit(value, 'toot_limit_simple', 'toot-button_simple', 'simple_toot_cw');"></textarea>
+                <div id="toot_box" class="invisible">
+                  <textarea class="textarea w-max" rows="3" placeholder="トゥート！" id="simple_toot_TL_input" onfocus="simple_open()" onkeyup="check_limit(value, 'toot_limit_simple', 'toot-button_simple', 'simple_toot_cw');"></textarea>
+                </div>
+                <div id="dock_box">
+                </div>
               </div>
               <div class="right" style="padding-right: 0">
                 <ons-button modifier="quiet" class="no-rd" onclick="post('simple_toot_TL_input', {cw:document.getElementById('simple_toot_cw').value, visibility:document.getElementById('post_mode_simple').value, sensitive:document.getElementById('nsfw_input_simple').value, in_reply_to_id: document.getElementById('post_reply_simple').value, local_only: document.getElementById('localonly_input_simple').value}, true)"
                   id="toot-button_simple">
-                  <ons-icon icon="fa-paper-plane-o"></ons-icon>
+                  <ons-icon icon="fa-pencil" id="simple_toot_post_icon"></ons-icon>
                 </ons-button>
               </div>
             </ons-list-item>
@@ -846,7 +851,6 @@
               <option value="toot" id="dial_toot" data-i18n="config.preferences.tl.speed_dial.toot">新規トゥート</option>
               <option value="alert" id="dial_alert" data-i18n="config.preferences.tl.speed_dial.notification">通知</option>
               <option value="reload" id="dial_reload" data-i18n="config.preferences.tl.speed_dial.reload">TL更新</option>
-              <option value="change" id="dial_change" data-i18n="config.preferences.tl.speed_dial.menu">TLメニュー</option>
             </ons-select>
           </div>
         </ons-list-item>
@@ -2254,10 +2258,6 @@
         </p>
       </div>
     </ons-modal>
-    <ons-toast id="TLChangeTab">
-      <div id="TLChangeList">
-      </div>
-    </ons-toast>
     <ons-toast id="del-post-ok">
       <span data-i18n="dialogs_html.del_post">トゥートを削除しました。</span>
     </ons-toast>
@@ -2465,6 +2465,14 @@
         </div>
       <% } %>
     </div>
+  </script>
+
+  <script type="text/html" id="dock_item_tmpl">
+    <label class="tabbar__item">
+      <button class="tabbar__button" onclick="dock_button(<%=id%>);return false;">
+        <i class="tabbar__icon <%=icon%>"></i>
+      </button>
+    </label>
   </script>
 </body>
 

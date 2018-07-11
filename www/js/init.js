@@ -230,7 +230,7 @@ function initevent() {
       show('now_loading');
       setTimeout(function() {
         if (ons.platform.isIPhoneX()) document.getElementById('item-dp').className = 'invisible'; //iPhoneXだとぶっ壊れるため
-        if (getConfig(1, 'dial'))
+        if (getConfig(1, 'dial') && getConfig(1, 'dial') !== 'change')
           document.getElementById('dial_' + getConfig(1, 'dial')).selected = true;
         if (getConfig(1, 'theme'))
           document.getElementById('theme_' + getConfig(1, 'theme')).selected = true;
@@ -414,7 +414,6 @@ function initevent() {
   $(document).on('click', '.timeline', function(event) {
     if ($('#navigator').attr('page') === 'home.html') {
       simple_close();
-      $('#TLChangeTab').hide();
     }
   });
 

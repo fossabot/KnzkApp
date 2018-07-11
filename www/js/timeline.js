@@ -3,7 +3,7 @@ function reset_alert() {
     .confirm(dialog_i18n('clear_alert', 1), {
       title: dialog_i18n('clear_alert'),
     })
-    .then(function(e) {
+    .then(function (e) {
       if (e === 1) {
         Fetch('https://' + inst + '/api/v1/notifications/clear', {
           headers: {
@@ -12,20 +12,20 @@ function reset_alert() {
           },
           method: 'POST',
         })
-          .then(function(response) {
+          .then(function (response) {
             if (response.ok) {
               return response.json();
             } else {
               throw response;
             }
           })
-          .then(function(json) {
+          .then(function (json) {
             showtoast('ok-clear-alert');
             showAlert();
             alert_old_id = 0;
             alert_new_id = 0;
           })
-          .catch(function(error) {
+          .catch(function (error) {
             error.text().then(errorMessage => {
               getError('Error/ClearNotification', errorMessage);
             });
@@ -55,7 +55,7 @@ function showAlert(reload, more_load) {
     },
     method: 'GET',
   })
-    .then(function(response) {
+    .then(function (response) {
       if (response.ok) {
         if (more_load) more_load.className = 'invisible';
         return response.json();
@@ -63,7 +63,7 @@ function showAlert(reload, more_load) {
         throw response;
       }
     })
-    .then(function(json) {
+    .then(function (json) {
       if (json[i]) {
         resetLabel();
         displayTime('update');
@@ -193,17 +193,16 @@ function showAlert(reload, more_load) {
 }
 
 function openTL(mode) {
-  $('#TLChangeTab').hide();
   if (mode === 'alert') {
     load('alert.html');
     showAlert();
-    setTimeout(function() {
+    setTimeout(function () {
       initph('alert');
     }, 200);
   } else if (mode === 'alert_nav') {
     loadNav('alert.html');
     showAlert();
-    setTimeout(function() {
+    setTimeout(function () {
       document.getElementById('alert_button').innerHTML =
         '<ons-toolbar-button onclick="BackTab()" class="toolbar-button">\n' +
         '<ons-icon icon="fa-chevron-left" class="ons-icon fa-chevron-left fa"></ons-icon>' +
@@ -215,7 +214,7 @@ function openTL(mode) {
   } else {
     closeAllws();
     load('home.html');
-    setTimeout(function() {
+    setTimeout(function () {
       initTimeline();
       document.getElementById('home-icon').src = user_icon;
       document
@@ -249,37 +248,33 @@ function initTimeline() {
     else if (dial === 'alert') icon = 'fa-bell';
     if (dial === 'reload') icon = 'fa-refresh';
     document.getElementById('dial-icon').className = 'ons-icon fa ' + icon;
-  } else if (dial) {
-    $('#dial_TL').removeClass('invisible');
-    var bufhtml = '',
-      icons = {
-        home: 'fa fa-fw fa-home',
-        local: 'fa fa-fw fa-users',
-        federated: 'fa fa-fw fa-globe',
-        local_media: 'fa fa-fw fa-picture-o',
-        federated_media: 'ons-icon zmdi zmdi-collection-image-o',
-        hashtag: 'fa fa-fw fa-hashtag',
-        list: 'fa fa-fw fa-bars',
-        plus_local: '+ローカル',
-      };
-    i = 0;
-    bufhtml +=
-      '<div onclick="openTL(\'alert_nav\')"><span>' +
-      i18next.t('navigation.notifications') +
-      '</span><div><i class="fa fa-fw fa-bell"></i></div></div>';
-    while (i <= timeline_config.length - 1) {
-      bufhtml +=
-        '<div onclick="TL_change(' +
-        i +
-        ')"><span>' +
-        TLname(timeline_config[i]) +
-        '</span><div><i class="' +
-        icons[TLident(timeline_config[i])] +
-        '"></i></div></div>';
-      i++;
-    }
-    document.getElementById('TLChangeList').innerHTML = bufhtml;
   }
+  var bufhtml = '',
+    BoxData = {},
+    data = getConfig(6, "t"),
+    icons = {
+      home: 'fa fa-fw fa-home',
+      local: 'fa fa-fw fa-users',
+      federated: 'fa fa-fw fa-globe',
+      local_media: 'fa fa-fw fa-picture-o',
+      federated_media: 'ons-icon zmdi zmdi-collection-image-o',
+      hashtag: 'fa fa-fw fa-hashtag',
+      list: 'fa fa-fw fa-bars',
+      plus_local: '+ローカル',
+    };
+  i = 0;
+  if (!data[0]) {
+    data = timeline_config;
+    setConfig(6, now_userconf['username'] + '@' + inst, data);
+  }
+  while (data[i]) {
+    BoxData['id'] = i;
+    BoxData['icon'] = icons[TLident(timeline_config[i])];
+    bufhtml += tmpl('dock_item_tmpl', BoxData);
+    i++;
+  }
+  document.getElementById("dock_box").innerHTML = bufhtml;
+
   if (getConfig(1, 'swipe_menu') == 1)
     document.getElementById('tl_tabs').setAttribute('swipeable', '1');
 }
@@ -358,14 +353,14 @@ function showTL(mode, reload, more_load, clear_load) {
       },
       method: 'GET',
     })
-      .then(function(response) {
+      .then(function (response) {
         if (response.ok) {
           return response.json();
         } else {
           throw response;
         }
       })
-      .then(function(json) {
+      .then(function (json) {
         if (json) {
           displayTime('update');
           if (more_load && !getConfig(1, 'chatmode')) {
@@ -393,17 +388,17 @@ function showTL(mode, reload, more_load, clear_load) {
                 if (TL_websocket[now_tab]) {
                   try {
                     TL_websocket[now_tab].close();
-                  } catch (e) {}
+                  } catch (e) { }
                   TL_websocket[now_tab] = null;
                 }
                 TL_websocket[now_tab] = new WebSocket(ws_url);
-                TL_websocket[now_tab].onopen = function() {
-                  TL_websocket[now_tab].onmessage = function(message) {
+                TL_websocket[now_tab].onopen = function () {
+                  TL_websocket[now_tab].onmessage = function (message) {
                     displayTime('update');
                     var ws_now_url = undefined;
                     try {
                       ws_now_url = TL_websocket[now_tab].url;
-                    } catch (e) {}
+                    } catch (e) { }
                     if (
                       instance_ws !== inst ||
                       timeline_now_tab !== now_tab ||
@@ -412,7 +407,7 @@ function showTL(mode, reload, more_load, clear_load) {
                       console.warn('エラー:Websocketが切断されていません');
                       try {
                         TL_websocket[now_tab].close();
-                      } catch (e) {}
+                      } catch (e) { }
                       TL_websocket[now_tab] = null;
                     } else {
                       var ws_resdata = JSON.parse(message.data);
@@ -487,12 +482,12 @@ function showTL(mode, reload, more_load, clear_load) {
                     }
                   };
 
-                  TL_websocket[now_tab].onclose = function() {
+                  TL_websocket[now_tab].onclose = function () {
                     console.log('ok:websocket:del');
                   };
                 };
 
-                TL_websocket[now_tab].onerror = function() {
+                TL_websocket[now_tab].onerror = function () {
                   console.warn('err');
                 };
               }
@@ -533,7 +528,7 @@ function showTL(mode, reload, more_load, clear_load) {
           if (!more_load && mode !== last_load_TL && !getConfig(1, 'chatmode')) {
             var tl = document.querySelector('#TL' + timeline_now_tab + '_main');
 
-            tl.onInfiniteScroll = function(done) {
+            tl.onInfiniteScroll = function (done) {
               showTL(null, null, done);
             };
           }
@@ -579,7 +574,7 @@ function showTagTL(tag, more_load) {
     },
     method: 'GET',
   })
-    .then(function(response) {
+    .then(function (response) {
       if (response.ok) {
         if (more_load) more_load.className = 'invisible';
         return response.json();
@@ -587,7 +582,7 @@ function showTagTL(tag, more_load) {
         throw response;
       }
     })
-    .then(function(json) {
+    .then(function (json) {
       if (json) {
         if (more_load) {
           reshtml = document.getElementById('tag_main').innerHTML;
@@ -649,7 +644,7 @@ function showAccountTL(id, more_load, mode = '', reload) {
     },
     method: 'GET',
   })
-    .then(function(response) {
+    .then(function (response) {
       if (response.ok) {
         if (more_load) more_load.className = 'invisible';
         return response.json();
@@ -657,7 +652,7 @@ function showAccountTL(id, more_load, mode = '', reload) {
         throw response;
       }
     })
-    .then(function(json) {
+    .then(function (json) {
       if (json) {
         if (more_load) {
           reshtml = document.getElementById('account_toot').innerHTML;
@@ -719,7 +714,6 @@ function TL_next() {
 }
 
 function TL_change(mode) {
-  $('#TLChangeTab').hide();
   var tab = document.getElementById('tl_tabs');
   tab.setActiveTab(mode);
 }
@@ -761,7 +755,7 @@ function setTLheadcolor(mode) {
   }
 }
 
-function TLident(mode) {
+function TLident(mode) { //タイムラインIDで返す
   var name,
     locale = {
       home: 'home',
@@ -780,7 +774,7 @@ function TLident(mode) {
   return name;
 }
 
-function TLname(mode) {
+function TLname(mode) { //名前で返す
   var n = TLident(mode),
     text;
   if (n === 'hashtag') text = mode;
@@ -797,7 +791,7 @@ function initph(mode) {
 
   try {
     var ph_alert = document.getElementById(id);
-    ph_alert.addEventListener('changestate', function(event) {
+    ph_alert.addEventListener('changestate', function (event) {
       var message = '';
 
       switch (event.state) {
@@ -820,7 +814,7 @@ function initph(mode) {
   }
   if (mode === 'TL') {
     try {
-      ph_alert.onAction = function(done) {
+      ph_alert.onAction = function (done) {
         console.log('reload');
         showAlert(done);
       };
@@ -829,7 +823,7 @@ function initph(mode) {
     }
   } else if (mode === 'acct') {
     try {
-      ph_alert.onAction = function(done) {
+      ph_alert.onAction = function (done) {
         console.log('reload');
         showAccountTL(account_page_id, null, acct_mode, done);
       };
@@ -838,7 +832,7 @@ function initph(mode) {
     }
   } else {
     try {
-      ph_alert.onAction = function(done) {
+      ph_alert.onAction = function (done) {
         console.log('reload');
         showAlert(done);
       };
@@ -1003,7 +997,7 @@ function AddTLConfig() {
       cancelable: true,
       buttons: buttons,
     })
-    .then(function(index) {
+    .then(function (index) {
       if (index === 0) addHashtag();
       else if (index === 1)
         ons.notification.alert(dialog_i18n('list_note', 1), {
@@ -1035,7 +1029,7 @@ function editTLConfigOption(id) {
       cancelable: true,
       buttons: buttons,
     })
-    .then(function(index) {
+    .then(function (index) {
       if (index === 0) editTLConfD(id);
       else if (index === 1) editTLdel(id);
     });
@@ -1044,7 +1038,7 @@ function editTLConfigOption(id) {
 function addHashtag() {
   ons.notification
     .prompt(dialog_i18n('hashtag', 1), { title: dialog_i18n('hashtag') })
-    .then(function(repcom) {
+    .then(function (repcom) {
       if (repcom) {
         editTLConfAdd('hashtag:' + escapeHTML(repcom));
         initTLConf();
@@ -1057,7 +1051,7 @@ function addTagToTimeline(tag) {
     .confirm(dialog_i18n('add_tag', 1), {
       title: dialog_i18n('add_tag'),
     })
-    .then(function(e) {
+    .then(function (e) {
       if (e === 1) {
         editTLConfAdd('hashtag:' + escapeHTML(tag));
       }
