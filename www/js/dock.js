@@ -1,5 +1,5 @@
 function dock_button(id) {
-  var data = getConfig(6, "t")[id];
+  var data = getConfig(6, 't')[id];
   if (data === 'notification') {
     openTL('alert_nav');
   } else {
